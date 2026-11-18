@@ -29,11 +29,18 @@ textarea{min-height:80px;resize:vertical}.micro{border-top:1px solid var(--line)
 footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 .hidden{display:none!important}
 @media(min-width:700px){main{padding-top:24px}.panel{padding:20px}}
+
+.ver{font-size:12px;font-weight:600;background:#ffffff22;border-radius:8px;padding:2px 8px;vertical-align:middle;margin-left:6px}
+.grid2{display:grid;grid-template-columns:1fr 110px;gap:10px}
+.tag{font-size:11px;font-weight:600;background:var(--soft);color:var(--green);border-radius:7px;padding:2px 7px;margin-left:6px;white-space:nowrap}
+.stepper{display:flex;align-items:center;gap:6px;margin-top:1px}.stepper button{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:18px;font-weight:700;color:var(--green);cursor:pointer}
+.stepper span{min-width:38px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}.stepper span.ok{color:var(--green)}
+.rel{border-top:1px solid var(--line);padding:10px 0}.rel:first-child{border-top:0}.rel summary{cursor:pointer;font-weight:700}.rel h4{margin:12px 0 4px;font-size:13px;color:var(--green)}.rel ul{margin:0;padding-left:20px}
 </style>
 </head>
 <body>
 <header><div class="wrap">
-<h1>Life OS</h1>
+<h1>Life OS <span class="ver appv"></span></h1>
 <p>Il tuo sistema personale per valutare le 10 aree della vita, scegliere le priorità e trasformarle in abitudini concrete. Piccoli passi, verificati nel tempo.</p>
 </div></header>
 <nav id="nav">
@@ -51,6 +58,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 </div>
 <div class="grid">
 <div class="panel"><h3>Priorità del ciclo</h3><p class="muted small">Scegli fino a 3 aree su cui concentrare il prossimo ciclo di 12 settimane.</p><div id="priorityList"></div></div>
+<div class="panel"><h3>Ritmo delle abitudini</h3><p class="muted small">Completamento del periodo in corso.</p><div id="rhythm"></div></div>
 <div class="panel"><h3>La regola del sistema</h3><p>Non provare a cambiare tutto insieme. Mantieni le aree importanti, ma concentra lo sforzo sulle 1–3 priorità del momento.</p><p class="muted small">Ogni settimana: osserva i comportamenti. Ogni mese: valuta i risultati. Ogni 12 settimane: ridefinisci le priorità.</p></div>
 </div>
 </section>
@@ -60,11 +68,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <div id="areaDetail" class="panel"><div class="empty">Seleziona un'area per iniziare.</div></div>
 </section>
 <section id="daily" class="view hidden">
-<div class="panel"><h2>Tracker giornaliero</h2><p class="muted small">Spunta le abitudini completate. La data viene salvata automaticamente su questo dispositivo.</p>
-<div class="field"><label for="trackerDate">Data</label><input type="date" id="trackerDate"></div>
-<div id="dailyHabits"></div>
-<div class="row" style="margin-top:15px"><span class="muted small" id="dailyProgress">0 abitudini completate</span><strong id="dailyPercent">0%</strong></div><div class="track"><span id="dailyBar" style="width:0%"></span></div>
-</div></section>
+<div class="panel"><h2>Tracker</h2><p class="muted small">Abitudini giornaliere, settimanali e mensili. Le settimanali e le mensili si completano nel loro periodo (settimana lun–dom, mese di calendario) in base alla data scelta.</p>
+<div class="field"><label for="trackerDate">Data</label><div class="row"><input type="date" id="trackerDate"><button class="btn" id="todayBtn">Oggi</button></div></div></div>
+<div id="trackerBody"></div></section>
 <section id="reviews" class="view hidden">
 <div class="panel"><h2>Revisione settimanale</h2><p class="muted small">Dedica 10–15 minuti a capire cosa ha funzionato e cosa correggere.</p>
 <div class="field"><label>Settimana che si conclude il</label><input type="date" id="weekDate"></div>
@@ -89,149 +95,178 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
 <h3>Ripristino</h3><p class="muted small">Cancella tutti i punteggi, le abitudini personalizzate e le revisioni salvate. Questa operazione non può essere annullata.</p><button class="btn danger" id="reset">Reset completo</button>
 </div>
-<div class="panel"><h3>Come usarlo</h3><ol class="small muted"><li>Valuta ogni area da 1 a 10.</li><li>Seleziona massimo 3 priorità per le prossime 12 settimane.</li><li>Personalizza microcategorie e scegli poche abitudini concrete.</li><li>Usa il tracker ogni giorno e fai la revisione settimanale.</li><li>Esporta un backup JSON, soprattutto prima di cambiare dispositivo o browser.</li></ol></div>
+<div class="panel"><h3>Come usarlo</h3><ol class="small muted"><li>Valuta ogni area da 1 a 10.</li><li>Seleziona massimo 3 priorità per le prossime 12 settimane.</li><li>Personalizza microcategorie e scegli poche abitudini concrete.</li><li>Scegli per ogni abitudine la frequenza (giornaliera, settimanale, mensile) e usa il tracker nel periodo giusto; fai la revisione settimanale.</li><li>Esporta un backup JSON, soprattutto prima di cambiare dispositivo o browser.</li></ol></div>
+<div class="panel"><h3>Versione e note di rilascio</h3><p class="small muted">Versione installata: <strong class="appv"></strong></p><div id="releaseNotes"></div></div>
 </section>
-</main><footer>Life OS · versione offline · i dati restano nel browser di questo dispositivo</footer>
+</main><footer>Life OS <span class="appv"></span> · versione offline · i dati restano nel browser di questo dispositivo</footer>
 <script>
 const defaults = [
 ["Health","Corpo forte, sano, atletico e pieno di energia","🏋️",[
-["Strength","Allenamento di forza","Allenamento pesi 3 volte a settimana"],
-["Cardiovascular","Resistenza cardiovascolare","Fare 2 sessioni aerobiche a settimana"],
-["Mobility","Mobilità e flessibilità","Fare 10 minuti di mobilità"],
-["Nutrition","Alimentazione","Pianificare pasti equilibrati e vari"],
-["Hydration","Idratazione","Bere acqua regolarmente"],
-["Sleep","Sonno","Proteggere 7–9 ore di sonno"],
-["Recovery","Recupero","Prevedere riposo e recupero"],
-["Prevention","Prevenzione","Programmare controlli e prevenzione"]]],
+["Strength","Allenamento di forza","Allenamento pesi 3 volte a settimana","w3"],
+["Cardiovascular","Resistenza cardiovascolare","Fare 2 sessioni aerobiche a settimana","w2"],
+["Mobility","Mobilità e flessibilità","Fare 10 minuti di mobilità","d"],
+["Nutrition","Alimentazione","Pianificare pasti equilibrati e vari","w1"],
+["Hydration","Idratazione","Bere acqua regolarmente","d"],
+["Sleep","Sonno","Proteggere 7–9 ore di sonno","d"],
+["Recovery","Recupero","Prevedere riposo e recupero","w1"],
+["Prevention","Prevenzione","Programmare controlli e prevenzione","m"]]],
 ["Work","Crescita professionale, autonomia e realizzazione","💼",[
-["Productivity","Produttività","Definire le 3 priorità del giorno"],
-["Deep Work","Lavoro concentrato","Fare blocchi di lavoro senza distrazioni"],
-["Organization","Organizzazione","Pianificare la settimana"],
-["Execution","Esecuzione","Chiudere attività e rispettare scadenze"],
-["Professional Skills","Competenze professionali","Studiare una competenza utile"],
-["Communication","Comunicazione","Allenare ascolto, chiarezza e negoziazione"],
-["Leadership","Leadership","Prendere iniziativa e responsabilità"],
-["Entrepreneurship","Imprenditorialità","Avanzare ogni settimana sul proprio business"]]],
+["Productivity","Produttività","Definire le 3 priorità del giorno","d"],
+["Deep Work","Lavoro concentrato","Fare blocchi di lavoro senza distrazioni","d"],
+["Organization","Organizzazione","Pianificare la settimana","w"],
+["Execution","Esecuzione","Chiudere attività e rispettare scadenze","d"],
+["Professional Skills","Competenze professionali","Studiare una competenza utile","w"],
+["Communication","Comunicazione","Allenare ascolto, chiarezza e negoziazione","w"],
+["Leadership","Leadership","Prendere iniziativa e responsabilità","w"],
+["Entrepreneurship","Imprenditorialità","Avanzare ogni settimana sul proprio business","w"]]],
 ["Family","Relazioni familiari solide e rispettose","🏡",[
-["Presence","Presenza","Dedicare tempo di qualità alla famiglia"],
-["Communication","Comunicazione","Fare una conversazione autentica"],
-["Listening","Ascolto","Ascoltare senza interrompere o giudicare"],
-["Support","Supporto","Offrire aiuto concreto quando serve"],
-["Traditions","Tradizioni","Creare momenti condivisi"],
-["Boundaries","Confini sani","Esprimere con rispetto i propri limiti"],
-["Appreciation","Apprezzamento","Esprimere gratitudine"]]],
+["Presence","Presenza","Dedicare tempo di qualità alla famiglia","w"],
+["Communication","Comunicazione","Fare una conversazione autentica","w"],
+["Listening","Ascolto","Ascoltare senza interrompere o giudicare","d"],
+["Support","Supporto","Offrire aiuto concreto quando serve","w"],
+["Traditions","Tradizioni","Creare momenti condivisi","m"],
+["Boundaries","Confini sani","Esprimere con rispetto i propri limiti","w"],
+["Appreciation","Apprezzamento","Esprimere gratitudine","d"]]],
 ["Friends","Amicizie profonde e autentiche","🤝",[
-["Connection","Connessione","Contattare un amico"],
-["Quality Time","Tempo di qualità","Organizzare un incontro senza distrazioni"],
-["Initiative","Iniziativa","Proporre un'attività"],
-["New Connections","Nuove conoscenze","Frequentare un contesto sociale nuovo"],
-["Reliability","Affidabilità","Mantenere gli impegni presi"],
-["Vulnerability","Autenticità","Condividere anche pensieri personali"]]],
+["Connection","Connessione","Contattare un amico","w"],
+["Quality Time","Tempo di qualità","Organizzare un incontro senza distrazioni","m"],
+["Initiative","Iniziativa","Proporre un'attività","m"],
+["New Connections","Nuove conoscenze","Frequentare un contesto sociale nuovo","m"],
+["Reliability","Affidabilità","Mantenere gli impegni presi","w"],
+["Vulnerability","Autenticità","Condividere anche pensieri personali","w"]]],
 ["Romance","Relazione sentimentale sana e appagante","❤️",[
-["Self Love","Autostima","Coltivare interessi e autonomia personale"],
-["Availability","Disponibilità emotiva","Essere aperto a conoscere e farsi conoscere"],
-["Communication","Comunicazione","Esprimere bisogni e desideri"],
-["Vulnerability","Vulnerabilità","Mostrarsi autentici"],
-["Dating","Conoscenza","Creare occasioni per incontrare persone"],
-["Empathy","Empatia","Ascoltare e comprendere l'altro"],
-["Boundaries","Confini","Rispettare i propri e altrui limiti"]]],
+["Self Love","Autostima","Coltivare interessi e autonomia personale","w"],
+["Availability","Disponibilità emotiva","Essere aperto a conoscere e farsi conoscere","w"],
+["Communication","Comunicazione","Esprimere bisogni e desideri","w"],
+["Vulnerability","Vulnerabilità","Mostrarsi autentici","w"],
+["Dating","Conoscenza","Creare occasioni per incontrare persone","w"],
+["Empathy","Empatia","Ascoltare e comprendere l'altro","d"],
+["Boundaries","Confini","Rispettare i propri e altrui limiti","w"]]],
 ["Sex","Sessualità consapevole e soddisfacente","🌿",[
-["Sexual Health","Salute sessuale","Curare prevenzione e controlli"],
-["Self Awareness","Consapevolezza corporea","Conoscere il proprio corpo e i propri desideri"],
-["Confidence","Sicurezza","Lavorare sull'immagine e la fiducia in sé"],
-["Intimacy","Intimità","Coltivare vicinanza emotiva"],
-["Communication","Comunicazione","Parlare apertamente di desideri e limiti"],
-["Consent","Consenso","Rispettare consenso e confini reciproci"],
-["Education","Educazione","Informarsi da fonti affidabili"]]],
+["Sexual Health","Salute sessuale","Curare prevenzione e controlli","m"],
+["Self Awareness","Consapevolezza corporea","Conoscere il proprio corpo e i propri desideri","w"],
+["Confidence","Sicurezza","Lavorare sull'immagine e la fiducia in sé","w"],
+["Intimacy","Intimità","Coltivare vicinanza emotiva","w"],
+["Communication","Comunicazione","Parlare apertamente di desideri e limiti","w"],
+["Consent","Consenso","Rispettare consenso e confini reciproci","w"],
+["Education","Educazione","Informarsi da fonti affidabili","m"]]],
 ["Creativity","Creare, sperimentare e trasformare idee in realtà","🎨",[
-["Ideation","Ideazione","Annotare idee e intuizioni"],
-["Experimentation","Sperimentazione","Provare qualcosa di nuovo"],
-["Problem Solving","Risoluzione problemi","Cercare soluzioni alternative"],
-["Building","Creazione","Dedicare tempo a un progetto personale"],
-["Expression","Espressione","Coltivare un'attività creativa"],
-["Play","Gioco","Fare qualcosa solo per il piacere di farlo"]]],
+["Ideation","Ideazione","Annotare idee e intuizioni","d"],
+["Experimentation","Sperimentazione","Provare qualcosa di nuovo","w"],
+["Problem Solving","Risoluzione problemi","Cercare soluzioni alternative","w"],
+["Building","Creazione","Dedicare tempo a un progetto personale","w"],
+["Expression","Espressione","Coltivare un'attività creativa","w"],
+["Play","Gioco","Fare qualcosa solo per il piacere di farlo","w"]]],
 ["Learning","Curiosità, conoscenza e apprendimento continuo","📚",[
-["Reading","Lettura","Leggere 20 minuti"],
-["Technical Skills","Competenze tecniche","Studiare una competenza professionale"],
-["Business Knowledge","Conoscenza business","Studiare imprenditoria e gestione"],
-["Financial Education","Educazione finanziaria","Approfondire un tema finanziario"],
-["Critical Thinking","Pensiero critico","Mettere in discussione un'idea"],
-["Languages","Lingue","Praticare una lingua straniera"],
-["Application","Applicazione","Mettere in pratica ciò che si impara"]]],
+["Reading","Lettura","Leggere 20 minuti","d"],
+["Technical Skills","Competenze tecniche","Studiare una competenza professionale","w"],
+["Business Knowledge","Conoscenza business","Studiare imprenditoria e gestione","w"],
+["Financial Education","Educazione finanziaria","Approfondire un tema finanziario","w"],
+["Critical Thinking","Pensiero critico","Mettere in discussione un'idea","w"],
+["Languages","Lingue","Praticare una lingua straniera","w"],
+["Application","Applicazione","Mettere in pratica ciò che si impara","w"]]],
 ["Finances","Stabilità, patrimonio e libertà di scelta","💰",[
-["Budgeting","Budget","Registrare e rivedere entrate e uscite"],
-["Saving","Risparmio","Accantonare una quota delle entrate"],
-["Investing","Investimenti","Seguire il piano di investimento"],
-["Debt Management","Debiti","Monitorare debiti e rate"],
-["Emergency Fund","Fondo emergenze","Alimentare il fondo di sicurezza"],
-["Income Growth","Crescita entrate","Lavorare su nuove opportunità di reddito"],
-["Spending Control","Spese consapevoli","Valutare gli acquisti non essenziali"],
-["Planning","Pianificazione","Rivedere gli obiettivi finanziari"]]],
+["Budgeting","Budget","Registrare e rivedere entrate e uscite","w"],
+["Saving","Risparmio","Accantonare una quota delle entrate","m"],
+["Investing","Investimenti","Seguire il piano di investimento","m"],
+["Debt Management","Debiti","Monitorare debiti e rate","m"],
+["Emergency Fund","Fondo emergenze","Alimentare il fondo di sicurezza","m"],
+["Income Growth","Crescita entrate","Lavorare su nuove opportunità di reddito","w"],
+["Spending Control","Spese consapevoli","Valutare gli acquisti non essenziali","w"],
+["Planning","Pianificazione","Rivedere gli obiettivi finanziari","m"]]],
 ["Spirit","Consapevolezza, valori, equilibrio e direzione","🧭",[
-["Self Awareness","Consapevolezza","Dedicare tempo all'introspezione"],
-["Meditation","Meditazione","Fare 5–10 minuti di meditazione"],
-["Gratitude","Gratitudine","Annotare 3 cose positive"],
-["Purpose","Scopo","Rileggere il proprio perché"],
-["Values","Valori","Verificare che le azioni siano coerenti con i valori"],
-["Mindfulness","Presenza","Fare una pausa consapevole"],
-["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni"],
-["Nature","Natura","Trascorrere tempo all'aperto"]]]
+["Self Awareness","Consapevolezza","Dedicare tempo all'introspezione","w"],
+["Meditation","Meditazione","Fare 5–10 minuti di meditazione","d"],
+["Gratitude","Gratitudine","Annotare 3 cose positive","d"],
+["Purpose","Scopo","Rileggere il proprio perché","w"],
+["Values","Valori","Verificare che le azioni siano coerenti con i valori","w"],
+["Mindfulness","Presenza","Fare una pausa consapevole","d"],
+["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
+["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const clone=x=>JSON.parse(JSON.stringify(x));
+const APP_VERSION="1.1.0";
+const RELEASES=[
+{v:"1.1.0",date:"18 novembre 2026",title:"Abitudini giornaliere, settimanali e mensili",sections:[
+["Novità",["Ogni abitudine ha una frequenza: giornaliera, settimanale o mensile, modificabile dalla scheda dell'area.","Obiettivo per periodo (es. 3 volte a settimana) con contatore +/−; con obiettivo 1 resta una semplice spunta.","Il tracker è diviso in tre sezioni con avanzamento proprio: giorno, settimana (lun–dom) e mese di calendario in base alla data scelta.","Panoramica: nuovo riquadro «Ritmo delle abitudini» con il completamento di oggi, settimana e mese.","Frequenze predefinite sensate per le 72 abitudini di base.","Versione dell'app e note di rilascio nella sezione Dati e backup."]],
+["Miglioramenti",["Migrazione automatica: le abitudini già salvate ricevono la frequenza predefinita (quelle aggiunte da te restano giornaliere); i log giornalieri restano intatti.","I backup JSON includono la versione; i backup v1.0.0 si importano e vengono aggiornati automaticamente.","Pulsante «Oggi» nel tracker."]],
+["Correzioni",["«Salva modifiche» nelle aree non salvava microcategorie e abitudini (selettore errato): corretto.","La data di oggi usava il fuso UTC e poteva sbagliare giorno vicino a mezzanotte: ora usa l'ora locale."]]]},
+{v:"1.0.0",date:"",title:"Prima versione",sections:[["Novità",["Cerchio della Vita con 10 aree e punteggi 1–10.","Microcategorie e abitudini personalizzabili, fino a 3 priorità per ciclo di 12 settimane.","Tracker giornaliero, revisioni settimanali e mensili.","Backup e ripristino JSON, dati salvati in locale."]]]}];
+const FR={daily:"Giornaliera",weekly:"Settimanale",monthly:"Mensile"};
 const key="lifeOS_v1";
-let data;
-try{data=JSON.parse(localStorage.getItem(key))||null}catch(e){data=null}
-if(!data)data={areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true}))})),logs:{},reviews:{weeks:{},months:{}}};
-function save(){localStorage.setItem(key,JSON.stringify(data))}
+const $=id=>document.getElementById(id),q=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseYmd=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const fmt=d=>d.toLocaleDateString("it-IT",{day:"numeric",month:"short"});
+function isoWeek(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());const start=new Date(d);start.setDate(d.getDate()-(d.getDay()+6)%7);const end=new Date(start);end.setDate(start.getDate()+6);const thu=new Date(start);thu.setDate(start.getDate()+3);const y=thu.getFullYear();const j4=new Date(y,0,4);const w1=new Date(j4);w1.setDate(j4.getDate()-(j4.getDay()+6)%7);const num=Math.round((start-w1)/604800000)+1;return{key:y+"-W"+pad(num),num,start,end}}
+const dcode=(i,j)=>{const c=(defaults[i]&&defaults[i][3][j]&&defaults[i][3][j][3])||"d";return{freq:c[0]==="w"?"weekly":c[0]==="m"?"monthly":"daily",target:+c.slice(1)||1}};
+const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true,...dcode(i,j)}))})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
+function migrate(d){d.logs=d.logs||{};d.reviews=d.reviews||{weeks:{},months:{}};d.plogs=d.plogs||{};d.plogs.weeks=d.plogs.weeks||{};d.plogs.months=d.plogs.months||{};
+ d.areas.forEach(a=>a.micros.forEach(m=>{if(!m.freq){const p=/^\d+_\d+$/.test(m.id)?m.id.split("_").map(Number):null;Object.assign(m,p?dcode(p[0],p[1]):{freq:"daily",target:1})}if(!(m.target>=1))m.target=1}));
+ d.appVersion=APP_VERSION;return d}
+let data=null;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}
+data=migrate(data&&data.areas?data:fresh());
+function save(){localStorage.setItem(key,JSON.stringify(data))}save();
 let selected=0;
-const $=id=>document.getElementById(id);
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const ds=()=>$("trackerDate").value||ymd(new Date());
+function periods(s){const dt=parseYmd(s),w=isoWeek(dt);return{daily:{k:s,label:dt.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"})},weekly:{k:w.key,label:`Settimana ${w.num} · ${fmt(w.start)} – ${fmt(w.end)}`},monthly:{k:s.slice(0,7),label:dt.toLocaleDateString("it-IT",{month:"long",year:"numeric"})}}}
+const bucket=f=>f==="daily"?data.logs:f==="weekly"?data.plogs.weeks:data.plogs.months;
+const store=(f,k)=>bucket(f)[k]=bucket(f)[k]||{};
+const count=(f,k,id)=>+((bucket(f)[k]||{})[id])||0;
+const items=()=>data.areas.flatMap(a=>a.micros.filter(m=>m.enabled&&m.habit.trim()).map(m=>({m,a})));
+const tgt=(f,m)=>f==="daily"?1:m.target;
+function stats(s){const P=periods(s),r={};Object.keys(FR).forEach(f=>{const it=items().filter(x=>x.m.freq===f);r[f]={total:it.length,done:it.filter(x=>count(f,P[f].k,x.m.id)>=tgt(f,x.m)).length}});return{P,r}}
 function renderOverview(){
  $("overall").textContent=(data.areas.reduce((s,a)=>s+Number(a.score),0)/data.areas.length).toFixed(1);
  $("areasGrid").innerHTML=data.areas.map(a=>`<button class="area" data-area="${a.id}"><div class="area-top"><strong>${a.icon} ${esc(a.name)}</strong><span class="score">${a.score}/10</span></div><div class="track"><span style="width:${a.score*10}%"></span></div><div class="small muted">${a.priority?"★ Priorità · ":""}${a.micros.filter(m=>m.enabled).length} microcategorie attive</div></button>`).join("");
  $("priorityList").innerHTML=data.areas.filter(a=>a.priority).map(a=>`<div class="small" style="padding:5px 0">${a.icon} ${esc(a.name)}</div>`).join("")||'<span class="small muted">Nessuna priorità selezionata.</span>';
  $("areasGrid").querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{selected=+b.dataset.area;show("areas");renderAreaPicker();renderDetail()});
+ const {r}=stats(ymd(new Date())),lab={daily:"Oggi",weekly:"Questa settimana",monthly:"Questo mese"};
+ $("rhythm").innerHTML=Object.keys(FR).map(f=>{const s=r[f],p=s.total?Math.round(s.done/s.total*100):0;return `<div class="micro"><div class="row small"><span>${lab[f]}</span><strong>${s.done}/${s.total}</strong></div><div class="track"><span style="width:${p}%"></span></div></div>`}).join("");
 }
 function renderAreaPicker(){$("areaPicker").innerHTML=data.areas.map(a=>`<button class="area" data-pick="${a.id}"><div class="area-top"><strong>${a.icon} ${esc(a.name)}</strong><span class="score">${a.score}/10</span></div></button>`).join("");$("areaPicker").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{selected=+b.dataset.pick;renderAreaPicker();renderDetail()})}
+const tagOf=m=>m.freq==="daily"?"Giornaliera":(FR[m.freq]+(m.target>1?" · "+m.target+"×":""));
 function renderDetail(){
  const a=data.areas[selected];if(!a)return;
  $("areaDetail").innerHTML=`<div class="row"><div><h2>${a.icon} ${esc(a.name)}</h2><p class="muted small">Personalizza l'area e scegli comportamenti sostenibili.</p></div><strong class="score">${a.score}/10</strong></div>
  <div class="field"><label>Descrizione / direzione desiderata</label><input id="desc" value="${esc(a.description)}"></div>
  <div class="field"><label>Soddisfazione attuale: <span id="scoreVal">${a.score}</span>/10</label><input id="score" type="range" min="1" max="10" value="${a.score}"></div>
  <div class="field"><label><input type="checkbox" id="priority" ${a.priority?"checked":""}> Includi tra le priorità del ciclo di 12 settimane</label><span class="small muted">Massimo 3 aree prioritarie.</span></div>
- <h3>Microcategorie e abitudini</h3><div id="microList">${a.micros.map((m,i)=>`<div class="micro"><div class="row"><strong>${esc(m.label||m.name)}</strong><label class="small"><input type="checkbox" data-enabled="${i}" ${m.enabled?"checked":""}> Attiva</label></div><div class="field"><label>Microcategoria</label><input data-label="${i}" value="${esc(m.label)}"></div><div class="field"><label>Abitudine / azione concreta</label><input data-habit="${i}" value="${esc(m.habit)}"></div><div class="actions"><button class="btn danger small" data-delete="${i}">Elimina</button></div></div>`).join("")}</div>
+ <h3>Microcategorie e abitudini</h3><div id="microList">${a.micros.map((m,i)=>`<div class="micro"><div class="row"><strong>${esc(m.label||m.name)}<span class="tag">${tagOf(m)}</span></strong><label class="small"><input type="checkbox" data-enabled="${i}" ${m.enabled?"checked":""}> Attiva</label></div><div class="field"><label>Microcategoria</label><input data-label="${i}" value="${esc(m.label)}"></div><div class="field"><label>Abitudine / azione concreta</label><input data-habit="${i}" value="${esc(m.habit)}"></div><div class="grid2"><div class="field" style="margin:0"><label>Frequenza</label><select data-freq="${i}">${Object.keys(FR).map(f=>`<option value="${f}" ${m.freq===f?"selected":""}>${FR[f]}</option>`).join("")}</select></div><div class="field" style="margin:0"><label>Volte / periodo</label><input type="number" min="1" max="99" data-target="${i}" value="${m.target}" ${m.freq==="daily"?"disabled":""}></div></div><div class="actions"><button class="btn danger small" data-delete="${i}">Elimina</button></div></div>`).join("")}</div>
  <div class="actions"><button class="btn" id="addMicro">+ Aggiungi microcategoria</button><button class="btn primary" id="saveArea">Salva modifiche</button></div>`;
  $("score").oninput=e=>$("scoreVal").textContent=e.target.value;
+ $("microList").querySelectorAll("[data-freq]").forEach(s=>s.onchange=()=>{const t=q(`[data-target="${s.dataset.freq}"]`);t.disabled=s.value==="daily";if(s.value==="daily")t.value=1});
  $("saveArea").onclick=()=>{
-  a.description=$("desc").value;a.score=+$("score").value;
   const p=$("priority").checked;
   if(p&&!a.priority&&data.areas.filter(x=>x.priority).length>=3){alert("Puoi selezionare al massimo 3 priorità.");return}
-  a.priority=p;
-  a.micros.forEach((m,i)=>{m.label=$(`[data-label="${i}"]`).value;m.habit=$(`[data-habit="${i}"]`).value;m.enabled=$(`[data-enabled="${i}"]`).checked});
+  a.description=$("desc").value;a.score=+$("score").value;a.priority=p;
+  a.micros.forEach((m,i)=>{m.label=q(`[data-label="${i}"]`).value;m.habit=q(`[data-habit="${i}"]`).value;m.enabled=q(`[data-enabled="${i}"]`).checked;m.freq=q(`[data-freq="${i}"]`).value;m.target=m.freq==="daily"?1:Math.max(1,Math.min(99,parseInt(q(`[data-target="${i}"]`).value)||1))});
   save();renderAll();renderDetail();
  };
- $("addMicro").onclick=()=>{a.micros.push({id:"custom_"+Date.now(),name:"Nuova",label:"Nuova microcategoria",habit:"Definisci un'azione concreta",enabled:true});save();renderDetail()};
+ $("addMicro").onclick=()=>{a.micros.push({id:"custom_"+Date.now(),name:"Nuova",label:"Nuova microcategoria",habit:"Definisci un'azione concreta",enabled:true,freq:"daily",target:1});save();renderDetail()};
  $("microList").querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{if(confirm("Eliminare questa microcategoria?")){a.micros.splice(+b.dataset.delete,1);save();renderDetail();renderAll()}});
 }
-function renderDaily(){
- const date=$("trackerDate").value;const log=data.logs[date]||{};
- const habits=data.areas.flatMap(a=>a.micros.filter(m=>m.enabled&&m.habit.trim()).map(m=>({id:m.id,area:a.name,habit:m.habit})));
- $("dailyHabits").innerHTML=habits.map(h=>`<div class="habit"><input type="checkbox" data-log="${esc(h.id)}" ${log[h.id]?"checked":""}><label><strong>${esc(h.habit)}</strong><div class="small muted">${esc(h.area)}</div></label></div>`).join("")||'<div class="empty">Attiva almeno un’abitudine nelle aree.</div>';
- $("dailyHabits").querySelectorAll("[data-log]").forEach(c=>c.onchange=()=>{data.logs[date]=data.logs[date]||{};data.logs[date][c.dataset.log]=c.checked;save();updateDailyProgress()});
- updateDailyProgress();
-}
-function updateDailyProgress(){const checks=[...$("dailyHabits").querySelectorAll('input[type="checkbox"]')];const done=checks.filter(c=>c.checked).length;const pct=checks.length?Math.round(done/checks.length*100):0;$("dailyProgress").textContent=`${done} di ${checks.length} abitudini completate`;$("dailyPercent").textContent=pct+"%";$("dailyBar").style.width=pct+"%"}
+function habitRow(f,k,x){const c=count(f,k,x.m.id),t=tgt(f,x.m),id=esc(x.m.id);
+ const ctl=t===1?`<input type="checkbox" data-chk="${id}" data-f="${f}" ${c>=1?"checked":""}>`:`<div class="stepper"><button data-step="-1" data-id="${id}" data-f="${f}">−</button><span class="${c>=t?"ok":""}">${c}/${t}</span><button data-step="1" data-id="${id}" data-f="${f}">+</button></div>`;
+ return `<div class="habit">${ctl}<label><strong>${esc(x.m.habit)}</strong><div class="small muted">${esc(x.a.name)}</div></label></div>`}
+function renderTracker(){const {P,r}=stats(ds());
+ $("trackerBody").innerHTML=Object.keys(FR).map(f=>{const it=items().filter(x=>x.m.freq===f),s=r[f],pct=s.total?Math.round(s.done/s.total*100):0;
+  return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${esc(P[f].label)}</div></div><strong>${pct}%</strong></div><div class="track"><span style="width:${pct}%"></span></div><div class="small muted" style="margin-bottom:6px">${s.done} di ${s.total} completate</div>${it.map(x=>habitRow(f,P[f].k,x)).join("")||'<div class="empty">Nessuna abitudine '+FR[f].toLowerCase()+' attiva.</div>'}</div>`}).join("")}
+$("trackerBody").onclick=e=>{const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,s=store(f,periods(ds())[f].k),id=b.dataset.id;s[id]=Math.max(0,Math.min(99,(+s[id]||0)+ +b.dataset.step));save();renderTracker();renderOverview()};
+$("trackerBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderOverview()};
 function renderHistory(){let out=[];Object.entries(data.reviews.weeks||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Settimana · ${d}</strong><div>${esc(r.next||r.wins||"Revisione salvata")}</div></div>`));Object.entries(data.reviews.months||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Mese · ${d}</strong><div>${esc(r.action||r.best||"Revisione salvata")}</div></div>`));$("reviewHistory").innerHTML=out.join("")||"Ancora nessuna revisione salvata."}
-function renderAll(){renderOverview();renderAreaPicker();renderDaily();renderHistory()}
+function renderReleases(){document.querySelectorAll(".appv").forEach(e=>e.textContent="v"+APP_VERSION);$("releaseNotes").innerHTML=RELEASES.map((r,i)=>`<details class="rel" ${i===0?"open":""}><summary>v${r.v} · ${esc(r.title)}${r.date?` <span class="small muted">(${r.date})</span>`:""}</summary>${r.sections.map(s=>`<h4>${s[0]}</h4><ul class="small">${s[1].map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`).join("")}</details>`).join("")}
+function renderAll(){renderOverview();renderAreaPicker();renderTracker();renderHistory()}
 function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
-const today=new Date().toISOString().slice(0,10);$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
-$("trackerDate").onchange=renderDaily;
+const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
+$("trackerDate").onchange=renderTracker;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
 $("saveWeek").onclick=()=>{const d=$("weekDate").value;if(!d)return;data.reviews.weeks[d]={wins:$("wins").value,obstacles:$("obstacles").value,next:$("next").value};save();renderHistory();$("weekSaved").textContent=" · Salvato"};
 $("saveMonth").onclick=()=>{const d=$("monthDate").value;if(!d)return;data.reviews.months[d]={best:$("monthBest").value,neglected:$("monthNeglected").value,action:$("monthAction").value};save();renderHistory();$("monthSaved").textContent=" · Salvato"};
-$("export").onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="life-os-backup-"+today+".json";a.click();URL.revokeObjectURL(a.href);$("backupStatus").textContent="Backup esportato."};
-$("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.areas||!d.logs||!d.reviews)throw Error();if(confirm("Importare questo backup? I dati attuali verranno sostituiti.")){data=d;save();renderAll();renderDetail();$("backupStatus").textContent="Backup importato correttamente."}}catch(err){alert("File non valido o non riconosciuto.")}e.target.value=""};
+$("export").onclick=()=>{data.appVersion=APP_VERSION;const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="life-os-backup-v"+APP_VERSION+"-"+today+".json";a.click();URL.revokeObjectURL(a.href);$("backupStatus").textContent="Backup esportato."};
+$("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.areas||!d.logs||!d.reviews)throw Error();const from=d.appVersion||"1.0.0";if(confirm("Importare questo backup (v"+from+")? I dati attuali verranno sostituiti.")){data=migrate(d);save();renderAll();renderDetail();$("backupStatus").textContent="Backup v"+from+" importato correttamente"+(from!==APP_VERSION?" e aggiornato alla v"+APP_VERSION:"")+"."}}catch(err){alert("File non valido o non riconosciuto.")}e.target.value=""};
 $("reset").onclick=()=>{if(confirm("Sei sicuro? Tutti i dati locali verranno cancellati.")){localStorage.removeItem(key);location.reload()}};
-renderAll();renderDetail();
+renderReleases();renderAll();renderDetail();
 </script>
 </body></html>
