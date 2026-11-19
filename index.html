@@ -130,6 +130,7 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 <div class="field"><label>Area della vita</label><div id="shAreas" class="chips"></div></div>
 <div class="field"><label>Frequenza</label><div class="seg" id="shFreq"><button data-sf="daily">Giornaliera</button><button data-sf="weekly">Settimanale</button><button data-sf="monthly">Mensile</button></div></div>
 <div class="field" id="shTargetWrap"><label id="shTargetLbl"></label><div class="stepper"><button id="shDec">−</button><span id="shN">1</span><button id="shInc">+</button></div></div>
+<div class="field"><label for="shStart">Inizia da</label><input type="date" id="shStart"></div>
 <div class="actions"><button class="btn primary" id="shSave">Aggiungi</button><button class="btn" id="shMore">Aggiungi e continua</button></div>
 </div></div>
 <div id="toast"></div>
@@ -218,8 +219,12 @@ const defaults = [
 ["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
 ["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const APP_VERSION="1.5.0";
+const APP_VERSION="1.6.0";
 const RELEASES=[
+{v:"1.6.0",date:"19 novembre 2026",title:"Data di inizio e archiviazione delle abitudini",sections:[
+["Novità",["Ogni abitudine ha una data di inizio (default: oggi). Si può scegliere alla creazione e modificare nella scheda dell'area, in «Modifica».","«Riparti da oggi»: azzera il punto di partenza dell'abitudine; i dati registrati restano salvati ma le statistiche ripartono da oggi.","«Archivia» al posto di «Elimina»: l'abitudine sparisce da Oggi, Tracker e liste, ma i log restano e continuano a contare nello storico fino alla data di archiviazione. Dalla sezione «Archiviate» di ogni area si può ripristinare."]],
+["Storico più affidabile",["Dashboard e obiettivi del 12 Week Year contano un'abitudine solo nei periodi in cui era attiva: una abitudine creata oggi non pesa più come 0% sulle settimane passate.","Giornaliere: contano i giorni attivi. Settimanali e mensili: contano i periodi interi in cui l'abitudine era attiva; il periodo di creazione, se parziale, non viene conteggiato.","Il Tracker nasconde, per le date passate, le abitudini non ancora iniziate."]],
+["Migrazione",["Le abitudini esistenti ricevono come data di inizio la data del primo log registrato (o oggi, se non hanno log). I backup precedenti si importano e si aggiornano da soli."]]]},
 {v:"1.5.0",date:"19 novembre 2026",title:"Home «Oggi» e interfaccia senza header",sections:[
 ["Novità",["Nuova home «Oggi»: mostra solo le abitudini da fare adesso, cioè le giornaliere non ancora fatte oggi e le settimanali o mensili che non hanno ancora raggiunto l'obiettivo del periodo in corso.","In testa la data, il numero di abitudini da fare e la percentuale di completamento; per le settimanali e mensili compaiono i giorni rimasti alla fine del periodo.","Le abitudini si completano direttamente dalla home (spunta o contatore +/−) e spariscono dall'elenco; la sezione «Completate» le raccoglie e permette di annullare.","La home si aggiorna quando riapri l'app dopo la mezzanotte."]],
 ["Miglioramenti",["Rimosso l'header: la barra in alto con menu, titolo e «＋ Abitudine» è ora il primo elemento della pagina e lascia più spazio ai contenuti.","La Panoramica resta disponibile dal menu."]]]},
@@ -249,8 +254,12 @@ const fmt=d=>d.toLocaleDateString("it-IT",{day:"numeric",month:"short"});
 function isoWeek(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());const start=new Date(d);start.setDate(d.getDate()-(d.getDay()+6)%7);const end=new Date(start);end.setDate(start.getDate()+6);const thu=new Date(start);thu.setDate(start.getDate()+3);const y=thu.getFullYear();const j4=new Date(y,0,4);const w1=new Date(j4);w1.setDate(j4.getDate()-(j4.getDay()+6)%7);const num=Math.round((start-w1)/604800000)+1;return{key:y+"-W"+pad(num),num,start,end}}
 const dcode=(i,j)=>{const c=(defaults[i]&&defaults[i][3][j]&&defaults[i][3][j][3])||"d";return{freq:c[0]==="w"?"weekly":c[0]==="m"?"monthly":"daily",target:+c.slice(1)||1}};
 const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true,...dcode(i,j)}))})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
+function firstLogOf(d,id){let best=ymd(new Date());const up=k=>{if(k<best)best=k};
+ Object.keys(d.logs||{}).forEach(k=>{if(d.logs[k]&&d.logs[k][id])up(k)});
+ Object.keys(d.plogs.weeks||{}).forEach(k=>{if(d.plogs.weeks[k][id]){const [y,w]=k.split("-W").map(Number),j=new Date(y,0,4),m=new Date(j);m.setDate(j.getDate()-(j.getDay()+6)%7+(w-1)*7);up(ymd(m))}});
+ Object.keys(d.plogs.months||{}).forEach(k=>{if(d.plogs.months[k][id])up(k+"-01")});return best}
 function migrate(d){d.logs=d.logs||{};d.reviews=d.reviews||{weeks:{},months:{}};d.plogs=d.plogs||{};d.plogs.weeks=d.plogs.weeks||{};d.plogs.months=d.plogs.months||{};
- d.areas.forEach(a=>a.micros.forEach(m=>{if(!m.freq){const p=/^\d+_\d+$/.test(m.id)?m.id.split("_").map(Number):null;Object.assign(m,p?dcode(p[0],p[1]):{freq:"daily",target:1})}if(!(m.target>=1))m.target=1}));
+ d.areas.forEach(a=>a.micros.forEach(m=>{if(!m.freq){const p=/^\d+_\d+$/.test(m.id)?m.id.split("_").map(Number):null;Object.assign(m,p?dcode(p[0],p[1]):{freq:"daily",target:1})}if(!(m.target>=1))m.target=1;if(!m.spans)m.spans=[{from:firstLogOf(d,m.id),to:null}];m.archived=!!m.archived}));
  d.snapshots=d.snapshots||{};if(!Object.keys(d.snapshots).length)d.snapshots[ymd(new Date()).slice(0,7)]=Object.fromEntries(d.areas.map(a=>[a.id,+a.score]));d.cycles=d.cycles||[];if(!d.cycles.some(c=>c.id===d.activeCycle))d.activeCycle=null;d.appVersion=APP_VERSION;return d}
 let data=null;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}
 data=migrate(data&&data.areas?data:fresh());
@@ -262,12 +271,17 @@ function periods(s){const dt=parseYmd(s),w=isoWeek(dt);return{daily:{k:s,label:d
 const bucket=f=>f==="daily"?data.logs:f==="weekly"?data.plogs.weeks:data.plogs.months;
 const store=(f,k)=>bucket(f)[k]=bucket(f)[k]||{};
 const count=(f,k,id)=>+((bucket(f)[k]||{})[id])||0;
-const items=()=>data.areas.flatMap(a=>a.micros.filter(m=>m.enabled&&m.habit.trim()).map(m=>({m,a})));
+const pEnd=(f,s)=>{if(f==="daily")return s;const d=parseYmd(s);return f==="weekly"?ymd(new Date(d.getFullYear(),d.getMonth(),d.getDate()+6-((d.getDay()+6)%7))):ymd(new Date(d.getFullYear(),d.getMonth()+1,0))};
+const items=s=>{s=s||ymd(new Date());return data.areas.flatMap(a=>a.micros.filter(m=>m.habit.trim()&&(m.archived||m.enabled)&&(m.spans||[]).some(p=>p.from<=pEnd(m.freq,s)&&(!p.to||s<p.to))).map(m=>({m,a})))};
+const statItems=()=>data.areas.flatMap(a=>a.micros.filter(m=>m.habit.trim()&&(m.archived||m.enabled)).map(m=>({m,a})));
+const cov=(m,a,b)=>(m.spans||[{from:"0000-01-01"}]).some(p=>p.from<=a&&(!p.to||b<p.to));
+const curFrom=m=>m.spans&&m.spans.length?m.spans[m.spans.length-1].from:ymd(new Date());
+const sinceTxt=m=>"Dal "+parseYmd(curFrom(m)).toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"});
 const tgt=(f,m)=>f==="daily"?1:m.target;
-function stats(s){const P=periods(s),r={};Object.keys(FR).forEach(f=>{const it=items().filter(x=>x.m.freq===f);r[f]={total:it.length,done:it.filter(x=>count(f,P[f].k,x.m.id)>=tgt(f,x.m)).length}});return{P,r}}
+function stats(s){const P=periods(s),r={};Object.keys(FR).forEach(f=>{const it=items(s).filter(x=>x.m.freq===f);r[f]={total:it.length,done:it.filter(x=>count(f,P[f].k,x.m.id)>=tgt(f,x.m)).length}});return{P,r}}
 function renderOverview(){
  $("overall").textContent=(data.areas.reduce((s,a)=>s+Number(a.score),0)/data.areas.length).toFixed(1);
- $("areasGrid").innerHTML=data.areas.map(a=>`<button class="area" data-area="${a.id}"><div class="area-top"><strong>${a.icon} ${esc(a.name)}</strong><span class="score">${a.score}/10</span></div><div class="track"><span style="width:${a.score*10}%"></span></div><div class="small muted">${a.priority?"★ Priorità · ":""}${a.micros.filter(m=>m.enabled).length} microcategorie attive</div></button>`).join("");
+ $("areasGrid").innerHTML=data.areas.map(a=>`<button class="area" data-area="${a.id}"><div class="area-top"><strong>${a.icon} ${esc(a.name)}</strong><span class="score">${a.score}/10</span></div><div class="track"><span style="width:${a.score*10}%"></span></div><div class="small muted">${a.priority?"★ Priorità · ":""}${a.micros.filter(m=>m.enabled&&!m.archived).length} microcategorie attive</div></button>`).join("");
  $("priorityList").innerHTML=data.areas.filter(a=>a.priority).map(a=>`<div class="small" style="padding:5px 0">${a.icon} ${esc(a.name)}</div>`).join("")||'<span class="small muted">Nessuna priorità selezionata.</span>';
  $("areasGrid").querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{selected=+b.dataset.area;show("areas");renderAreaPicker();renderDetail()});
  const {r}=stats(ymd(new Date())),lab={daily:"Oggi",weekly:"Questa settimana",monthly:"Questo mese"};
@@ -275,18 +289,19 @@ function renderOverview(){
 }
 function renderAreaPicker(){$("areaPicker").innerHTML=data.areas.map(a=>`<button class="area" data-pick="${a.id}"><div class="area-top"><strong>${a.icon} ${esc(a.name)}</strong><span class="score">${a.score}/10</span></div></button>`).join("");$("areaPicker").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{selected=+b.dataset.pick;renderAreaPicker();renderDetail()})}
 const tagOf=m=>m.freq==="daily"?"Giornaliera":(FR[m.freq]+(m.target>1?" · "+m.target+"×":""));
-function applyMicros(a){a.micros.forEach((m,i)=>{if(!q(`[data-label="${i}"]`))return;m.label=q(`[data-label="${i}"]`).value;m.habit=q(`[data-habit="${i}"]`).value;m.enabled=q(`[data-enabled="${i}"]`).checked;m.freq=q(`[data-freq="${i}"]`).value;m.target=m.freq==="daily"?1:Math.max(1,Math.min(99,parseInt(q(`[data-target="${i}"]`).value)||1))})}
+function applyMicros(a){a.micros.forEach((m,i)=>{if(!q(`[data-label="${i}"]`))return;const sv=q(`[data-start="${i}"]`);if(sv&&sv.value&&m.spans&&m.spans.length)m.spans[m.spans.length-1].from=sv.value;m.label=q(`[data-label="${i}"]`).value;m.habit=q(`[data-habit="${i}"]`).value;m.enabled=q(`[data-enabled="${i}"]`).checked;m.freq=q(`[data-freq="${i}"]`).value;m.target=m.freq==="daily"?1:Math.max(1,Math.min(99,parseInt(q(`[data-target="${i}"]`).value)||1))})}
 function renderDetail(){
  const a=data.areas[selected];if(!a)return;
  $("areaDetail").innerHTML=`<div class="row"><div><h2>${a.icon} ${esc(a.name)}</h2><p class="muted small">Personalizza l'area e scegli comportamenti sostenibili.</p></div><strong class="score">${a.score}/10</strong></div>
  <div class="field"><label>Descrizione / direzione desiderata</label><input id="desc" value="${esc(a.description)}"></div>
  <div class="field"><label>Soddisfazione attuale: <span id="scoreVal">${a.score}</span>/10</label><input id="score" type="range" min="1" max="10" value="${a.score}"></div>
  <div class="field"><label><input type="checkbox" id="priority" ${a.priority?"checked":""}> Includi tra le priorità del ciclo di 12 settimane</label><span class="small muted">Massimo 3 aree prioritarie.</span></div>
- <h3>Microcategorie e abitudini</h3><div id="microList">${a.micros.map((m,i)=>`<div class="micro"><div class="row"><div><strong>${esc(m.habit||m.label)}</strong><span class="tag">${tagOf(m)}</span><div class="small muted">${esc(m.label)}</div></div><label class="small"><input type="checkbox" data-enabled="${i}" ${m.enabled?"checked":""}> Attiva</label></div><details><summary class="small" style="cursor:pointer;color:var(--green);font-weight:600;margin-top:6px">Modifica</summary><div class="field"><label>Microcategoria</label><input data-label="${i}" value="${esc(m.label)}"></div><div class="field"><label>Abitudine / azione concreta</label><input data-habit="${i}" value="${esc(m.habit)}"></div><div class="grid2"><div class="field" style="margin:0"><label>Frequenza</label><select data-freq="${i}">${Object.keys(FR).map(f=>`<option value="${f}" ${m.freq===f?"selected":""}>${FR[f]}</option>`).join("")}</select></div><div class="field" style="margin:0"><label>Volte / periodo</label><input type="number" min="1" max="99" data-target="${i}" value="${m.target}" ${m.freq==="daily"?"disabled":""}></div></div><div class="actions"><button class="btn danger small" data-delete="${i}">Elimina</button></div></details></div>`).join("")}</div>
+ <h3>Microcategorie e abitudini</h3><div id="microList">${a.micros.map((m,i)=>m.archived?"":`<div class="micro" data-idx="${i}"><div class="row"><div><strong>${esc(m.habit||m.label)}</strong><span class="tag">${tagOf(m)}</span><div class="small muted">${esc(m.label)}</div><div class="small muted since">${sinceTxt(m)}</div></div><label class="small"><input type="checkbox" data-enabled="${i}" ${m.enabled?"checked":""}> Attiva</label></div><details><summary class="small" style="cursor:pointer;color:var(--green);font-weight:600;margin-top:6px">Modifica</summary><div class="field"><label>Microcategoria</label><input data-label="${i}" value="${esc(m.label)}"></div><div class="field"><label>Abitudine / azione concreta</label><input data-habit="${i}" value="${esc(m.habit)}"></div><div class="grid2"><div class="field" style="margin:0"><label>Frequenza</label><select data-freq="${i}">${Object.keys(FR).map(f=>`<option value="${f}" ${m.freq===f?"selected":""}>${FR[f]}</option>`).join("")}</select></div><div class="field" style="margin:0"><label>Volte / periodo</label><input type="number" min="1" max="99" data-target="${i}" value="${m.target}" ${m.freq==="daily"?"disabled":""}></div></div><div class="field"><label>Inizio abitudine</label><input type="date" data-start="${i}" value="${curFrom(m)}"></div><div class="actions"><button class="btn small" data-reset="${i}">Riparti da oggi</button><button class="btn danger small" data-archive="${i}">Archivia</button></div></details></div>`).join("")}</div>
+ ${a.micros.some(m=>m.archived)?`<details style="margin-top:12px"><summary class="small" style="cursor:pointer;font-weight:600">Archiviate (${a.micros.filter(m=>m.archived).length})</summary>${a.micros.map((m,i)=>m.archived?`<div class="row" style="padding:8px 0;border-top:1px solid var(--line)"><span class="small">${esc(m.habit||m.label)} <span class="tag">${tagOf(m)}</span></span><button class="btn small" data-restore="${i}">Ripristina</button></div>`:"").join("")}</details>`:""}
  <div class="actions"><button class="btn" id="addMicro">+ Aggiungi abitudine</button><button class="btn primary" id="saveArea">Salva modifiche</button></div>`;
  $("score").oninput=e=>$("scoreVal").textContent=e.target.value;
  $("microList").querySelectorAll("[data-freq]").forEach(s=>s.onchange=()=>{const t=q(`[data-target="${s.dataset.freq}"]`);t.disabled=s.value==="daily";if(s.value==="daily")t.value=1});
- $("microList").addEventListener("change",()=>{applyMicros(a);save();$("microList").querySelectorAll(".micro").forEach((el,i)=>{const m=a.micros[i];el.querySelector("strong").textContent=m.habit||m.label;el.querySelector(".tag").textContent=tagOf(m);el.querySelector(".row .small.muted").textContent=m.label});renderOverview();renderTracker();renderToday();renderCycle();renderDash()});
+ $("microList").addEventListener("change",()=>{applyMicros(a);save();$("microList").querySelectorAll(".micro").forEach(el=>{const m=a.micros[+el.dataset.idx];el.querySelector("strong").textContent=m.habit||m.label;el.querySelector(".tag").textContent=tagOf(m);el.querySelector(".row .small.muted").textContent=m.label;el.querySelector(".since").textContent=sinceTxt(m)});renderOverview();renderTracker();renderToday();renderCycle();renderDash()});
  $("saveArea").onclick=()=>{
   const p=$("priority").checked;
   if(p&&!a.priority&&data.areas.filter(x=>x.priority).length>=3){alert("Puoi selezionare al massimo 3 priorità.");return}
@@ -295,13 +310,16 @@ function renderDetail(){
   snap();save();renderAll();renderDetail();
  };
  $("addMicro").onclick=()=>openSheet({areaId:a.id});
- $("microList").querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{if(confirm("Eliminare questa microcategoria?")){a.micros.splice(+b.dataset.delete,1);save();renderDetail();renderAll()}});
+ const mod=(i,fn)=>{fn(a.micros[i]);save();renderAll();renderDetail()};
+ $("areaDetail").querySelectorAll("[data-archive]").forEach(b=>b.onclick=()=>{if(confirm("Archiviare questa abitudine? Sparirà da Oggi e Tracker, ma i dati registrati restano nello storico."))mod(+b.dataset.archive,m=>{applyMicros(a);m.archived=true;m.spans[m.spans.length-1].to=ymd(new Date())})});
+ $("areaDetail").querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{if(confirm("Ripartire da oggi? I dati registrati restano salvati, ma le statistiche di questa abitudine ripartono da oggi."))mod(+b.dataset.reset,m=>{applyMicros(a);m.spans=[{from:ymd(new Date()),to:null}]})});
+ $("areaDetail").querySelectorAll("[data-restore]").forEach(b=>b.onclick=()=>mod(+b.dataset.restore,m=>{m.archived=false;m.spans.push({from:ymd(new Date()),to:null})}));
 }
 function habitRow(f,k,x){const c=count(f,k,x.m.id),t=tgt(f,x.m),id=esc(x.m.id);
  const ctl=t===1?`<input type="checkbox" data-chk="${id}" data-f="${f}" ${c>=1?"checked":""}>`:`<div class="stepper"><button data-step="-1" data-id="${id}" data-f="${f}">−</button><span class="${c>=t?"ok":""}">${c}/${t}</span><button data-step="1" data-id="${id}" data-f="${f}">+</button></div>`;
  return `<div class="habit">${ctl}<label><strong>${esc(x.m.habit)}</strong><div class="small muted">${esc(x.a.name)}</div></label></div>`}
 function renderTracker(){const {P,r}=stats(ds());
- $("trackerBody").innerHTML=Object.keys(FR).map(f=>{const it=items().filter(x=>x.m.freq===f),s=r[f],pct=s.total?Math.round(s.done/s.total*100):0;
+ $("trackerBody").innerHTML=Object.keys(FR).map(f=>{const it=items(ds()).filter(x=>x.m.freq===f),s=r[f],pct=s.total?Math.round(s.done/s.total*100):0;
   return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${esc(P[f].label)}</div></div><div style="display:flex;align-items:center;gap:10px"><strong>${pct}%</strong><button class="btn" data-add="${f}" style="padding:5px 11px" aria-label="Aggiungi abitudine">＋</button></div></div><div class="track"><span style="width:${pct}%"></span></div><div class="small muted" style="margin-bottom:6px">${s.done} di ${s.total} completate</div>${it.map(x=>habitRow(f,P[f].k,x)).join("")||'<div class="empty">Nessuna abitudine '+FR[f].toLowerCase()+' attiva.</div>'}</div>`}).join("")}
 $("trackerBody").onclick=e=>{const ad=e.target.closest("[data-add]");if(ad){openSheet({freq:ad.dataset.add});return}const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,s=store(f,periods(ds())[f].k),id=b.dataset.id;s[id]=Math.max(0,Math.min(99,(+s[id]||0)+ +b.dataset.step));save();renderTracker();renderToday();renderOverview()};
 $("trackerBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderToday();renderOverview()};
@@ -341,8 +359,8 @@ const weekStart=k=>{const [y,w]=k.split("-W").map(Number);return addDays(mondayO
 const col=d=>d>0?"var(--green)":d<0?"var(--red)":"var(--muted)";
 const sg=d=>(d>0?"+":"")+d;
 function wc(m,ws,up){
- if(m.freq==="daily"){let e=0,a=0;for(let i=0;i<7;i++){const d=addDays(ws,i);if(d>up)break;e++;if(count("daily",ymd(d),m.id))a++}return{e,a}}
- if(m.freq==="weekly")return{e:m.target,a:Math.min(m.target,count("weekly",isoWeek(ws).key,m.id))};
+ if(m.freq==="daily"){let e=0,x=0;for(let i=0;i<7;i++){const d=addDays(ws,i);if(d>up)break;const k=ymd(d);if(!cov(m,k,k))continue;e++;if(count("daily",k,m.id))x++}return{e,a:x}}
+ if(m.freq==="weekly")return cov(m,ymd(ws),ymd(addDays(ws,6)))?{e:m.target,a:Math.min(m.target,count("weekly",isoWeek(ws).key,m.id))}:{e:0,a:0};
  return null}
 function goalStats(g,c,T){
  const cs=parseYmd(c.start),ms=g.habitIds.map(findMicro).filter(Boolean).map(x=>x.m),weeks=[];let E=0,A=0;
@@ -350,13 +368,13 @@ function goalStats(g,c,T){
   if(started)ms.forEach(m=>{const r=wc(m,ws,T);if(r){e+=r.e;a+=r.a}});
   weeks.push({n:w+1,started,e,a,pct:started&&e?Math.round(a/e*100):null});E+=e;A+=a}
  const months=new Set();for(let i=0;i<84;i++){const d=addDays(cs,i);if(d>T)break;months.add(ymd(d).slice(0,7))}
- ms.filter(m=>m.freq==="monthly").forEach(m=>months.forEach(ym=>{const v=Math.min(m.target,count("monthly",ym,m.id));E+=m.target;A+=v}));
+ ms.filter(m=>m.freq==="monthly").forEach(m=>months.forEach(ym=>{if(!cov(m,ym+"-01",ymd(new Date(+ym.slice(0,4),+ym.slice(5),0))))return;const v=Math.min(m.target,count("monthly",ym,m.id));E+=m.target;A+=v}));
  return{weeks,E,A,pct:E?Math.round(A/E*100):null}}
 function cyclePct(c){const T=todayD(),end=addDays(parseYmd(c.start),83),t=T<end?T:end;let E=0,A=0;c.goals.forEach(g=>{const s=goalStats(g,c,t);E+=s.E;A+=s.A});return E?Math.round(A/E*100):null}
 const bars=w=>`<div class="wks">${w.map(x=>`<div class="wk" title="Settimana ${x.n}"><b><span class="${x.pct>=85?"ok":""}" style="height:${x.pct==null?0:Math.min(100,x.pct)}%"></span></b><i>${x.n}</i></div>`).join("")}</div>`;
 let ed=null;
 function editor(){const a=data.areas.find(x=>x.id===ed.areaId),oth=ed.habits.filter(id=>!a.micros.some(m=>m.id===id)).length;
- return `<div class="micro"><div class="field"><label>Obiettivo trimestrale</label><input data-gt value="${esc(ed.title)}" placeholder="Es. Arrivare a 3 allenamenti stabili a settimana"></div><div class="field"><label>Area</label><select data-garea>${data.areas.map(x=>`<option value="${x.id}" ${x.id===ed.areaId?"selected":""}>${x.icon} ${esc(x.name)}</option>`).join("")}</select></div><div class="field"><label>Abitudini collegate</label>${a.micros.filter(m=>m.enabled).map(m=>`<div class="habit"><input type="checkbox" data-gh="${esc(m.id)}" ${ed.habits.includes(m.id)?"checked":""}><label>${esc(m.habit)} <span class="tag">${tagOf(m)}</span></label></div>`).join("")}${oth?`<div class="small muted">+ ${oth} collegate da altre aree</div>`:""}<button class="btn" data-act="newHabit" style="margin-top:6px">+ Nuova abitudine</button></div><div class="actions"><button class="btn primary" data-act="saveGoal">Salva</button><button class="btn" data-act="cancel">Annulla</button><button class="btn danger" data-act="delGoal">Elimina</button></div></div>`}
+ return `<div class="micro"><div class="field"><label>Obiettivo trimestrale</label><input data-gt value="${esc(ed.title)}" placeholder="Es. Arrivare a 3 allenamenti stabili a settimana"></div><div class="field"><label>Area</label><select data-garea>${data.areas.map(x=>`<option value="${x.id}" ${x.id===ed.areaId?"selected":""}>${x.icon} ${esc(x.name)}</option>`).join("")}</select></div><div class="field"><label>Abitudini collegate</label>${a.micros.filter(m=>m.enabled&&!m.archived).map(m=>`<div class="habit"><input type="checkbox" data-gh="${esc(m.id)}" ${ed.habits.includes(m.id)?"checked":""}><label>${esc(m.habit)} <span class="tag">${tagOf(m)}</span></label></div>`).join("")}${oth?`<div class="small muted">+ ${oth} collegate da altre aree</div>`:""}<button class="btn" data-act="newHabit" style="margin-top:6px">+ Nuova abitudine</button></div><div class="actions"><button class="btn primary" data-act="saveGoal">Salva</button><button class="btn" data-act="cancel">Annulla</button><button class="btn danger" data-act="delGoal">Elimina</button></div></div>`}
 function renderCycle(){const T=todayD(),c=data.cycles.find(x=>x.id===data.activeCycle);let h="";
  if(!c)h=`<div class="panel"><h2>12 Week Year</h2><p class="muted small">Un ciclo dura 12 settimane. Scegli 1–3 obiettivi trimestrali e collegali alle abitudini che li fanno avanzare: il sistema misura quanto le esegui. Dall'85% di esecuzione sei in linea.</p><div class="cmp"><div class="field"><label>Nome ciclo</label><input id="cyName" placeholder="Es. Ciclo 1"></div><div class="field"><label>Inizio (diventa un lunedì)</label><input type="date" id="cyStart" value="${ymd(mondayOf(T))}"></div></div><button class="btn primary" data-act="create">Avvia ciclo</button></div>`;
  else{const cs=parseYmd(c.start),days=Math.round((T-cs)/864e5),wk=days<0?0:Math.min(12,Math.floor(days/7)+1);
@@ -395,7 +413,7 @@ function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapsh
  let fm=null;const up=d=>{if(!fm||d<fm)fm=d};
  Object.keys(data.logs).forEach(k=>{if(Object.values(data.logs[k]).some(Boolean))up(mondayOf(parseYmd(k)))});
  Object.entries(data.plogs.weeks).forEach(([k,o])=>{if(Object.values(o).some(Boolean))up(weekStart(k))});
- const rate=(ws0,n,flt)=>{let e=0,a=0;for(let i=0;i<n;i++){const ws=addDays(ws0,i*7);if(!fm||ws<fm)continue;const wend=addDays(ws,6),lim=wend<T?wend:T;items().forEach(x=>{if(flt&&!flt(x))return;const r=wc(x.m,ws,lim);if(r){e+=r.e;a+=r.a}})}return e?Math.round(a/e*100):null};
+ const rate=(ws0,n,flt)=>{let e=0,a=0;for(let i=0;i<n;i++){const ws=addDays(ws0,i*7);if(!fm||ws<fm)continue;const wend=addDays(ws,6),lim=wend<T?wend:T;statItems().forEach(x=>{if(flt&&!flt(x))return;const r=wc(x.m,ws,lim);if(r){e+=r.e;a+=r.a}})}return e?Math.round(a/e*100):null};
  const cell=(a,b)=>a==null||b==null?'<span class="muted">–</span>':`${a}% → ${b}% <strong style="color:${col(b-a)}">${sg(b-a)}</strong>`;
  const trend=Array.from({length:12},(_,i)=>{const ws=addDays(cm,(i-11)*7);return{x:fmt(ws),v:rate(ws,1)}});
  const sp=ks.map(k=>({x:mlab(k),v:r1(avg(data.snapshots[k],dashArea))}));
@@ -411,7 +429,7 @@ function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapsh
 <div class="panel"><div class="row"><h3>Confronto tra periodi</h3><select data-cmpn style="width:auto">${[[1,"Ultima settimana"],[4,"Ultime 4 settimane"],[12,"Ultime 12 settimane"]].map(o=>`<option value="${o[0]}" ${o[0]===cmpN?"selected":""}>${o[1]}</option>`).join("")}</select></div><p class="small muted">Periodo scelto contro quello precedente di pari durata (settimane complete). Punteggi: ultimi due mesi salvati.</p>${row("<strong>Totale</strong>",scCell(prev,cur,"all"),cell(rate(A0,cmpN),rate(B,cmpN)))}${data.areas.map(a=>row(`${a.icon} ${esc(a.name)}`,scCell(prev,cur,a.id),cell(rate(A0,cmpN,x=>x.a.id===a.id),rate(B,cmpN,x=>x.a.id===a.id)))).join("")}</div>`}
 $("dashBody").onchange=e=>{const t=e.target;if(t.matches("[data-dasharea]")){dashArea=t.value;renderDash()}else if(t.matches("[data-cmpn]")){cmpN=+t.value;renderDash()}};
 function renderToday(){
- const T=todayD(),P=periods(ymd(T)),all=items(),fr=["daily","weekly","monthly"],tb=$("todayBody");
+ const T=todayD(),P=periods(ymd(T)),all=items(ymd(T)),fr=["daily","weekly","monthly"],tb=$("todayBody");
  const isDone=x=>count(x.m.freq,P[x.m.freq].k,x.m.id)>=tgt(x.m.freq,x.m);
  const pend=all.filter(x=>!isDone(x)),dn=all.filter(isDone),total=all.length,pct=total?Math.round(dn.length/total*100):0;
  const open=tb.querySelector("details")?.open;
@@ -445,11 +463,11 @@ function renderSheet(){
  $("shFreq").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.sf===sh.freq));
  $("shTargetWrap").classList.toggle("hidden",sh.freq==="daily");
  $("shTargetLbl").textContent=sh.freq==="weekly"?"Quante volte a settimana?":"Quante volte al mese?";$("shN").textContent=sh.target}
-function openSheet(o={}){sh={areaId:o.areaId!=null?o.areaId:(lastArea!=null?lastArea:(data.areas.find(a=>a.priority)||data.areas[0]).id),freq:o.freq||lastFreq,target:1,after:o.after||null};$("shText").value="";renderSheet();$("sheet").classList.remove("hidden");setTimeout(()=>$("shText").focus(),50)}
+function openSheet(o={}){sh={areaId:o.areaId!=null?o.areaId:(lastArea!=null?lastArea:(data.areas.find(a=>a.priority)||data.areas[0]).id),freq:o.freq||lastFreq,target:1,after:o.after||null};$("shText").value="";$("shStart").value=ymd(new Date());renderSheet();$("sheet").classList.remove("hidden");setTimeout(()=>$("shText").focus(),50)}
 function closeSheet(){$("sheet").classList.add("hidden")}
 function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2200)}
 function addHabit(){const t=$("shText").value.trim();if(!t){$("shText").focus();return false}
- const a=data.areas.find(x=>x.id===sh.areaId),m={id:"custom_"+Date.now()+Math.floor(Math.random()*1e3),name:t.slice(0,40),label:t.slice(0,40),habit:t,enabled:true,freq:sh.freq,target:sh.freq==="daily"?1:sh.target};
+ const a=data.areas.find(x=>x.id===sh.areaId),m={id:"custom_"+Date.now()+Math.floor(Math.random()*1e3),name:t.slice(0,40),label:t.slice(0,40),habit:t,enabled:true,freq:sh.freq,target:sh.freq==="daily"?1:sh.target,archived:false,spans:[{from:$("shStart").value||ymd(new Date()),to:null}]};
  a.micros.push(m);lastArea=sh.areaId;lastFreq=sh.freq;if(sh.after)sh.after(m);save();renderAll();renderDetail();toast("Aggiunta a "+a.icon+" "+a.name);return true}
 $("sheet").onclick=e=>{const t=e.target;
  if(t===$("sheet")||t.closest("#shX"))return closeSheet();
