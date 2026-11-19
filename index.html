@@ -62,6 +62,7 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 <button data-view="radar">🎯 Radar</button>
 <button data-view="cycle">🏁 12 Settimane</button>
 <button data-view="dash">📈 Dashboard</button>
+<button data-view="stats">📊 Statistiche</button>
 <button data-view="reviews">📝 Revisioni</button>
 <button data-view="backup">💾 Dati e backup</button>
 </nav>
@@ -96,6 +97,7 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 </section>
 <section id="cycle" class="view hidden"><div id="cycleBody"></div></section>
 <section id="dash" class="view hidden"><div id="dashBody"></div></section>
+<section id="stats" class="view hidden"><div id="statsBody"></div></section>
 <section id="reviews" class="view hidden">
 <div class="panel"><h2>Revisione settimanale</h2><p class="muted small">Dedica 10–15 minuti a capire cosa ha funzionato e cosa correggere.</p>
 <div class="field"><label>Settimana che si conclude il</label><input type="date" id="weekDate"></div>
@@ -219,8 +221,12 @@ const defaults = [
 ["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
 ["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const APP_VERSION="1.6.0";
+const APP_VERSION="1.7.0";
 const RELEASES=[
+{v:"1.7.0",date:"19 novembre 2026",title:"Statistiche cronologiche per abitudine",sections:[
+["Novità",["Nuova scheda «Statistiche»: percentuale di realizzazione su 7 giorni, 1 mese, 6 mesi e 12 mesi.","Media totale di tutte le abitudini e media per frequenza (giornaliere, settimanali, mensili).","Tracciato cronologico per ogni abitudine, con una barra per periodo, più il tracciato medio di ogni frequenza. Verde dall'85%; toccando o passando su una barra si vede il periodo e la percentuale.","Ordinamento della lista per area, dalle peggiori o dalle migliori; ogni elenco si può chiudere."]],
+["Come si calcola",["Si contano solo i periodi conclusi in cui l'abitudine era attiva (data di inizio e archiviazione); il periodo in corso compare più chiaro ed è escluso dal calcolo.","Giornaliere: giorni fatti su giorni attivi; barre giornaliere fino a 1 mese, settimanali a 6 mesi, mensili a 12 mesi.","Settimanali e mensili: volte fatte (max obiettivo) su obiettivo di ogni periodo. 7 giorni = ultima settimana conclusa; 1 mese = ultime 4 settimane; per le mensili 7 giorni e 1 mese mostrano l'ultimo mese concluso.","Le medie contano ogni abitudine allo stesso modo."]],
+["Miglioramenti",["Nessun cambio al formato dei dati: i backup precedenti restano compatibili."]]]},
 {v:"1.6.0",date:"19 novembre 2026",title:"Data di inizio e archiviazione delle abitudini",sections:[
 ["Novità",["Ogni abitudine ha una data di inizio (default: oggi). Si può scegliere alla creazione e modificare nella scheda dell'area, in «Modifica».","«Riparti da oggi»: azzera il punto di partenza dell'abitudine; i dati registrati restano salvati ma le statistiche ripartono da oggi.","«Archivia» al posto di «Elimina»: l'abitudine sparisce da Oggi, Tracker e liste, ma i log restano e continuano a contare nello storico fino alla data di archiviazione. Dalla sezione «Archiviate» di ogni area si può ripristinare."]],
 ["Storico più affidabile",["Dashboard e obiettivi del 12 Week Year contano un'abitudine solo nei periodi in cui era attiva: una abitudine creata oggi non pesa più come 0% sulle settimane passate.","Giornaliere: contano i giorni attivi. Settimanali e mensili: contano i periodi interi in cui l'abitudine era attiva; il periodo di creazione, se parziale, non viene conteggiato.","Il Tracker nasconde, per le date passate, le abitudini non ancora iniziate."]],
@@ -444,8 +450,59 @@ function renderToday(){
 $("todayBody").onclick=e=>{const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,st=store(f,periods(ymd(new Date()))[f].k),id=b.dataset.id;st[id]=Math.max(0,Math.min(99,(+st[id]||0)+ +b.dataset.step));save();renderToday();renderTracker();renderOverview()};
 $("todayBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ymd(new Date()))[f].k)[c.dataset.chk]=c.checked?1:0;save();renderToday();renderTracker();renderOverview()};
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderToday()});
-function renderAll(){renderToday();renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
-function show(id){closeNav();if(id==="today")renderToday();const nb=q('nav button[data-view="'+id+'"]');if(nb)$("viewTitle").textContent=nb.textContent;if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
+const RANGES={"7g":{t:"7 giorni",d:7,w:1,m:1},"1m":{t:"1 mese",d:30,w:4,m:1},"6m":{t:"6 mesi",d:182,w:26,m:6},"12m":{t:"12 mesi",d:365,w:52,m:12}};
+let statRange="1m",statSort="area",statOpen={daily:true,weekly:true,monthly:true};
+const act=(m,a,b)=>(m.spans||[]).some(p=>p.from<=b&&(!p.to||a<p.to));
+const avgOf=a=>a.length?a.reduce((t,v)=>t+v,0)/a.length:null;
+function unitsFor(freq,R){
+ const T=todayD(),unit=freq==="weekly"?"week":freq==="monthly"?"month":(R.d<=30?"day":R.d<=182?"week":"month");
+ const n=unit==="day"?R.d:unit==="week"?(freq==="daily"?Math.round(R.d/7):R.w):(freq==="daily"?Math.round(R.d/30.4):R.m),list=[];
+ for(let i=n;i>=0;i--){let s,e,label,short;
+  if(unit==="day"){s=addDays(T,-i);e=s;label=s.toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short"});short=fmt(s)}
+  else if(unit==="week"){s=addDays(mondayOf(T),-7*i);e=addDays(s,6);label="Sett. "+isoWeek(s).num+" · "+fmt(s)+" – "+fmt(e);short=fmt(s)}
+  else{s=new Date(T.getFullYear(),T.getMonth()-i,1);e=new Date(T.getFullYear(),T.getMonth()-i+1,0);label=mlab(ymd(s).slice(0,7));short=label}
+  list.push({s,e,label,short,partial:i===0})}
+ return{unit,list}}
+function evalUnit(m,u,unit){
+ const T=todayD(),a0=ymd(u.s),b0=ymd(u.e);
+ if(m.freq==="daily"){
+  if(unit==="day"){const v=count("daily",a0,m.id)?1:0;if(u.partial)return act(m,a0,b0)?{e:1,a:v,partial:true}:null;return cov(m,a0,a0)?{e:1,a:v}:null}
+  let e=0,a=0;const lim=u.partial?addDays(T,-1):u.e;
+  for(let d=new Date(u.s);d<=lim;d=addDays(d,1)){const k=ymd(d);if(cov(m,k,k)){e++;if(count("daily",k,m.id))a++}}
+  return e?{e,a,partial:u.partial}:null}
+ const key=m.freq==="weekly"?isoWeek(u.s).key:a0.slice(0,7),c=count(m.freq,key,m.id),tg=m.target;
+ if(u.partial)return act(m,a0,b0)?{e:tg,a:Math.min(tg,c),partial:true}:null;
+ return cov(m,a0,b0)?{e:tg,a:Math.min(tg,c)}:null}
+function habitStat(x,R){const {unit,list}=unitsFor(x.m.freq,R);let E=0,A=0;
+ const bk=list.map(u=>{const r=evalUnit(x.m,u,unit);if(r&&!r.partial){E+=r.e;A+=r.a}return{v:r?r.a/r.e:null,partial:!!(r&&r.partial),label:u.label,short:u.short}});
+ return{bk,pct:E?Math.round(A/E*100):null}}
+function freqSeries(rows){return rows.length?rows[0].st.bk.map((b,i)=>{const v=rows.map(r=>r.st.bk[i].v).filter(x=>x!=null);return{v:v.length?avgOf(v):null,partial:b.partial,label:b.label,short:b.short}}):[]}
+function traceSVG(bk,h){const W=360,n=bk.length,gap=n>40?1:2,bw=(W-(n-1)*gap)/n;
+ let g=`<rect x="0" y="${h-1}" width="${W}" height="1" fill="#d8dfd9"/>`;
+ bk.forEach((b,i)=>{const x=i*(bw+gap);
+  if(b.v==null){g+=`<rect x="${x}" y="${h-3}" width="${bw}" height="2" fill="#e2e7e1"><title>${esc(b.label)} · nessun dato</title></rect>`;return}
+  const bh=Math.max(2,Math.round(b.v*(h-4)));
+  g+=`<rect x="${x}" y="${h-1-bh}" width="${bw}" height="${bh}" rx="1" fill="${b.v>=.85?"#315c49":"#c18b42"}" opacity="${b.partial?.4:1}"><title>${esc(b.label)} · ${Math.round(b.v*100)}%${b.partial?" (in corso)":""}</title></rect>`});
+ return `<svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="none" role="img" aria-label="Tracciato cronologico">${g}</svg>`}
+function renderStats(){const body=$("statsBody");if(!body)return;
+ const R=RANGES[statRange];
+ const rows=statItems().map(x=>({x,st:habitStat(x,R)})).filter(r=>r.st.pct!=null||(!r.x.m.archived&&r.x.m.enabled));
+ const byF={daily:[],weekly:[],monthly:[]};rows.forEach(r=>byF[r.x.m.freq].push(r));
+ const pcts=a=>a.map(r=>r.st.pct).filter(v=>v!=null),avg=a=>{const p=pcts(a);return p.length?Math.round(avgOf(p)):null};
+ const kpi=(v,t,sub)=>`<div><div class="kpi">${v==null?"—":v+"%"}</div><div class="small muted">${t}</div>${sub?`<div class="small muted">${sub}</div>`:""}</div>`;
+ const ptxt=f=>f==="daily"?(statRange==="7g"?"ultimi 7 giorni":statRange==="1m"?"ultimi 30 giorni":statRange==="6m"?"ultimi 6 mesi · barre settimanali":"ultimi 12 mesi · barre mensili"):f==="weekly"?"ultime "+R.w+(R.w===1?" settimana conclusa":" settimane concluse"):(R.m===1?"ultimo mese concluso":"ultimi "+R.m+" mesi conclusi");
+ const sortRows=a=>{const c=[...a];if(statSort==="low")c.sort((p,q)=>(p.st.pct==null?1e9:p.st.pct)-(q.st.pct==null?1e9:q.st.pct));else if(statSort==="high")c.sort((p,q)=>(q.st.pct==null?-1:q.st.pct)-(p.st.pct==null?-1:p.st.pct));return c};
+ const ends=bk=>`<div class="row small muted"><span>${esc(bk[0].short)}</span><span>${esc(bk[bk.length-1].short)}</span></div>`;
+ const rowH=r=>{const m=r.x.m,a=r.x.a,bk=r.st.bk;return `<div style="padding:10px 0;border-top:1px solid var(--line)"><div class="row"><div><strong>${esc(m.habit)}</strong><div class="small muted">${a.icon} ${esc(a.name)} · ${tagOf(m)}${m.archived?" · archiviata":""}</div></div><span class="score">${r.st.pct==null?"—":r.st.pct+"%"}</span></div>${traceSVG(bk,36)}${ends(bk)}</div>`};
+ const panel=f=>{const rs=sortRows(byF[f]);if(!rs.length)return"";const ser=freqSeries(byF[f]),av=avg(byF[f]);
+  return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${rs.length} abitudini · ${ptxt(f)}</div></div><div style="text-align:right"><div class="kpi">${av==null?"—":av+"%"}</div><div class="small muted">media</div></div></div>${traceSVG(ser,80)}${ends(ser)}<details data-so="${f}" ${statOpen[f]?"open":""} style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:600">Per singola abitudine (${rs.length})</summary>${rs.map(rowH).join("")}</details></div>`};
+ body.innerHTML=`<div class="panel"><h2>Statistiche abitudini</h2><p class="muted small">Percentuale di realizzazione sui periodi conclusi in cui l'abitudine era attiva. Il periodo in corso appare più chiaro ed è escluso dal calcolo. Verde dall'85%.</p><div class="seg" id="statSeg">${Object.keys(RANGES).map(k=>`<button data-sr="${k}" class="${k===statRange?"on":""}">${RANGES[k].t}</button>`).join("")}</div><div class="grid" style="margin-top:14px">${kpi(avg(rows),"media totale",pcts(rows).length+" abitudini")}${kpi(avg(byF.daily),"giornaliere")}${kpi(avg(byF.weekly),"settimanali")}${kpi(avg(byF.monthly),"mensili")}</div><div class="field" style="margin-top:12px"><label for="statSortSel">Ordina le abitudini</label><select id="statSortSel">${[["area","Per area"],["low","Dalle peggiori"],["high","Dalle migliori"]].map(o=>`<option value="${o[0]}" ${o[0]===statSort?"selected":""}>${o[1]}</option>`).join("")}</select></div></div>`
+ +(rows.length?["daily","weekly","monthly"].map(panel).join(""):'<div class="panel"><div class="empty">Nessuna abitudine attiva da mostrare.</div></div>')}
+$("statsBody").onclick=e=>{const b=e.target.closest("[data-sr]");if(b){statRange=b.dataset.sr;renderStats()}};
+$("statsBody").onchange=e=>{if(e.target.id==="statSortSel"){statSort=e.target.value;renderStats()}};
+$("statsBody").addEventListener("toggle",e=>{const f=e.target.dataset&&e.target.dataset.so;if(f)statOpen[f]=e.target.open},true);
+function renderAll(){renderStats();renderToday();renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
+function show(id){closeNav();if(id==="stats")renderStats();if(id==="today")renderToday();const nb=q('nav button[data-view="'+id+'"]');if(nb)$("viewTitle").textContent=nb.textContent;if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
 const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
 $("trackerDate").onchange=renderTracker;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
