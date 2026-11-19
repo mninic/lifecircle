@@ -52,14 +52,11 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 </style>
 </head>
 <body>
-<header><div class="wrap">
-<h1>Life OS <span class="ver appv"></span></h1>
-<p>Il tuo sistema personale per valutare le 10 aree della vita, scegliere le priorità e trasformarle in abitudini concrete. Piccoli passi, verificati nel tempo.</p>
-</div></header>
-<div class="topbar"><button class="burger" id="burger" aria-label="Menu">☰</button><div class="vt" id="viewTitle">🏠 Panoramica</div><button class="btn primary addbtn" id="topAdd">＋ Abitudine</button></div>
+<div class="topbar"><button class="burger" id="burger" aria-label="Menu">☰</button><div class="vt" id="viewTitle">☀️ Oggi</div><button class="btn primary addbtn" id="topAdd">＋ Abitudine</button></div>
 <div id="scrim"></div>
 <nav id="nav"><div class="navhead"><span>Life OS <span class="ver appv" style="background:var(--soft);color:var(--green)"></span></span><div id="navClose" role="button" aria-label="Chiudi menu" style="cursor:pointer;padding:4px 8px">✕</div></div>
-<button class="active" data-view="overview">🏠 Panoramica</button>
+<button class="active" data-view="today">☀️ Oggi</button>
+<button data-view="overview">🏠 Panoramica</button>
 <button data-view="areas">🗂️ Aree e abitudini</button>
 <button data-view="daily">✅ Tracker</button>
 <button data-view="radar">🎯 Radar</button>
@@ -69,7 +66,8 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 <button data-view="backup">💾 Dati e backup</button>
 </nav>
 <main>
-<section id="overview" class="view">
+<section id="today" class="view"><div id="todayBody"></div></section>
+<section id="overview" class="view hidden">
 <div class="panel">
 <div class="row"><div><h2>Il tuo Cerchio della Vita</h2><div class="muted small">Valuta la tua soddisfazione attuale, non il tuo valore personale.</div></div><div><div class="kpi" id="overall">—</div><div class="small muted">media / 10</div></div></div>
 <div class="radarwrap" id="radarOverview"></div>
@@ -220,8 +218,11 @@ const defaults = [
 ["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
 ["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const APP_VERSION="1.4.0";
+const APP_VERSION="1.5.0";
 const RELEASES=[
+{v:"1.5.0",date:"19 novembre 2026",title:"Home «Oggi» e interfaccia senza header",sections:[
+["Novità",["Nuova home «Oggi»: mostra solo le abitudini da fare adesso, cioè le giornaliere non ancora fatte oggi e le settimanali o mensili che non hanno ancora raggiunto l'obiettivo del periodo in corso.","In testa la data, il numero di abitudini da fare e la percentuale di completamento; per le settimanali e mensili compaiono i giorni rimasti alla fine del periodo.","Le abitudini si completano direttamente dalla home (spunta o contatore +/−) e spariscono dall'elenco; la sezione «Completate» le raccoglie e permette di annullare.","La home si aggiorna quando riapri l'app dopo la mezzanotte."]],
+["Miglioramenti",["Rimosso l'header: la barra in alto con menu, titolo e «＋ Abitudine» è ora il primo elemento della pagina e lascia più spazio ai contenuti.","La Panoramica resta disponibile dal menu."]]]},
 {v:"1.4.0",date:"19 novembre 2026",title:"Menu a hamburger e creazione rapida delle abitudini",sections:[
 ["Novità",["Menu a hamburger: la barra di navigazione diventa un cassetto laterale con tutte le sezioni; in alto resta il titolo della sezione corrente. Si chiude toccando fuori, scegliendo una voce o con Esc.","Creazione rapida delle abitudini: un unico pannello con testo, area della vita (chip), frequenza e numero di volte. Basta un tocco su «＋ Abitudine» in alto.","«Aggiungi e continua» per inserire più abitudini di fila; l'area e la frequenza scelte restano selezionate.","Il pulsante ＋ è disponibile anche in ogni sezione del Tracker (frequenza già impostata), nella scheda di un'area (area già scelta) e nell'editor degli obiettivi 12 Week Year, dove la nuova abitudine viene collegata subito all'obiettivo."]],
 ["Miglioramenti",["Scheda area più ordinata: ogni abitudine mostra testo, frequenza e interruttore «Attiva»; i campi di modifica si aprono con «Modifica».","Le modifiche alle abitudini esistenti si salvano subito, senza premere «Salva modifiche» (che resta per punteggio, descrizione e priorità).","Nessun cambio al formato dei dati: i backup delle versioni precedenti restano compatibili."]]]},
@@ -285,7 +286,7 @@ function renderDetail(){
  <div class="actions"><button class="btn" id="addMicro">+ Aggiungi abitudine</button><button class="btn primary" id="saveArea">Salva modifiche</button></div>`;
  $("score").oninput=e=>$("scoreVal").textContent=e.target.value;
  $("microList").querySelectorAll("[data-freq]").forEach(s=>s.onchange=()=>{const t=q(`[data-target="${s.dataset.freq}"]`);t.disabled=s.value==="daily";if(s.value==="daily")t.value=1});
- $("microList").addEventListener("change",()=>{applyMicros(a);save();$("microList").querySelectorAll(".micro").forEach((el,i)=>{const m=a.micros[i];el.querySelector("strong").textContent=m.habit||m.label;el.querySelector(".tag").textContent=tagOf(m);el.querySelector(".row .small.muted").textContent=m.label});renderOverview();renderTracker();renderCycle();renderDash()});
+ $("microList").addEventListener("change",()=>{applyMicros(a);save();$("microList").querySelectorAll(".micro").forEach((el,i)=>{const m=a.micros[i];el.querySelector("strong").textContent=m.habit||m.label;el.querySelector(".tag").textContent=tagOf(m);el.querySelector(".row .small.muted").textContent=m.label});renderOverview();renderTracker();renderToday();renderCycle();renderDash()});
  $("saveArea").onclick=()=>{
   const p=$("priority").checked;
   if(p&&!a.priority&&data.areas.filter(x=>x.priority).length>=3){alert("Puoi selezionare al massimo 3 priorità.");return}
@@ -302,8 +303,8 @@ function habitRow(f,k,x){const c=count(f,k,x.m.id),t=tgt(f,x.m),id=esc(x.m.id);
 function renderTracker(){const {P,r}=stats(ds());
  $("trackerBody").innerHTML=Object.keys(FR).map(f=>{const it=items().filter(x=>x.m.freq===f),s=r[f],pct=s.total?Math.round(s.done/s.total*100):0;
   return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${esc(P[f].label)}</div></div><div style="display:flex;align-items:center;gap:10px"><strong>${pct}%</strong><button class="btn" data-add="${f}" style="padding:5px 11px" aria-label="Aggiungi abitudine">＋</button></div></div><div class="track"><span style="width:${pct}%"></span></div><div class="small muted" style="margin-bottom:6px">${s.done} di ${s.total} completate</div>${it.map(x=>habitRow(f,P[f].k,x)).join("")||'<div class="empty">Nessuna abitudine '+FR[f].toLowerCase()+' attiva.</div>'}</div>`}).join("")}
-$("trackerBody").onclick=e=>{const ad=e.target.closest("[data-add]");if(ad){openSheet({freq:ad.dataset.add});return}const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,s=store(f,periods(ds())[f].k),id=b.dataset.id;s[id]=Math.max(0,Math.min(99,(+s[id]||0)+ +b.dataset.step));save();renderTracker();renderOverview()};
-$("trackerBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderOverview()};
+$("trackerBody").onclick=e=>{const ad=e.target.closest("[data-add]");if(ad){openSheet({freq:ad.dataset.add});return}const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,s=store(f,periods(ds())[f].k),id=b.dataset.id;s[id]=Math.max(0,Math.min(99,(+s[id]||0)+ +b.dataset.step));save();renderTracker();renderToday();renderOverview()};
+$("trackerBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderToday();renderOverview()};
 function renderHistory(){let out=[];Object.entries(data.reviews.weeks||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Settimana · ${d}</strong><div>${esc(r.next||r.wins||"Revisione salvata")}</div></div>`));Object.entries(data.reviews.months||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Mese · ${d}</strong><div>${esc(r.action||r.best||"Revisione salvata")}</div></div>`));$("reviewHistory").innerHTML=out.join("")||"Ancora nessuna revisione salvata."}
 function renderReleases(){document.querySelectorAll(".appv").forEach(e=>e.textContent="v"+APP_VERSION);$("releaseNotes").innerHTML=RELEASES.map((r,i)=>`<details class="rel" ${i===0?"open":""}><summary>v${r.v} · ${esc(r.title)}${r.date?` <span class="small muted">(${r.date})</span>`:""}</summary>${r.sections.map(s=>`<h4>${s[0]}</h4><ul class="small">${s[1].map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`).join("")}</details>`).join("")}
 const MC=["#c18b42","#315c49"];
@@ -409,8 +410,24 @@ function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapsh
 <div class="panel"><h3>Completamento abitudini · 12 settimane</h3>${fm?lineSVG(trend,100,"%"):empty}<div class="small muted">Giornaliere e settimanali; le mensili non sono incluse e l'ultima settimana è parziale.</div></div>
 <div class="panel"><div class="row"><h3>Confronto tra periodi</h3><select data-cmpn style="width:auto">${[[1,"Ultima settimana"],[4,"Ultime 4 settimane"],[12,"Ultime 12 settimane"]].map(o=>`<option value="${o[0]}" ${o[0]===cmpN?"selected":""}>${o[1]}</option>`).join("")}</select></div><p class="small muted">Periodo scelto contro quello precedente di pari durata (settimane complete). Punteggi: ultimi due mesi salvati.</p>${row("<strong>Totale</strong>",scCell(prev,cur,"all"),cell(rate(A0,cmpN),rate(B,cmpN)))}${data.areas.map(a=>row(`${a.icon} ${esc(a.name)}`,scCell(prev,cur,a.id),cell(rate(A0,cmpN,x=>x.a.id===a.id),rate(B,cmpN,x=>x.a.id===a.id)))).join("")}</div>`}
 $("dashBody").onchange=e=>{const t=e.target;if(t.matches("[data-dasharea]")){dashArea=t.value;renderDash()}else if(t.matches("[data-cmpn]")){cmpN=+t.value;renderDash()}};
-function renderAll(){renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
-function show(id){closeNav();const nb=q('nav button[data-view="'+id+'"]');if(nb)$("viewTitle").textContent=nb.textContent;if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
+function renderToday(){
+ const T=todayD(),P=periods(ymd(T)),all=items(),fr=["daily","weekly","monthly"],tb=$("todayBody");
+ const isDone=x=>count(x.m.freq,P[x.m.freq].k,x.m.id)>=tgt(x.m.freq,x.m);
+ const pend=all.filter(x=>!isDone(x)),dn=all.filter(isDone),total=all.length,pct=total?Math.round(dn.length/total*100):0;
+ const open=tb.querySelector("details")?.open;
+ const lw=7-((T.getDay()+6)%7),lm=new Date(T.getFullYear(),T.getMonth()+1,0).getDate()-T.getDate()+1;
+ const hint={daily:"",weekly:lw+(lw===1?" giorno":" giorni")+" alla fine della settimana",monthly:lm+(lm===1?" giorno":" giorni")+" alla fine del mese"};
+ const head={daily:"Oggi",weekly:"Questa settimana",monthly:"Questo mese"};
+ let h=`<div class="panel"><div class="row"><div><h2 style="text-transform:capitalize">${esc(P.daily.label)}</h2><div class="muted small">${pend.length?pend.length+" da fare · "+dn.length+" completate":total?"Tutto fatto per ora 🎉":"Nessuna abitudine attiva"}</div></div><div class="kpi">${pct}%</div></div><div class="track"><span style="width:${pct}%"></span></div></div>`;
+ fr.forEach(f=>{const it=pend.filter(x=>x.m.freq===f);if(it.length)h+=`<div class="panel"><div class="row"><h3>${head[f]}</h3><span class="small muted">${hint[f]}</span></div>${it.map(x=>habitRow(f,P[f].k,x)).join("")}</div>`});
+ if(!total)h+='<div class="panel"><div class="empty">Crea la tua prima abitudine con «＋ Abitudine» in alto.</div></div>';
+ if(dn.length)h+=`<div class="panel"><details ${open?"open":""}><summary style="cursor:pointer;font-weight:700">Completate (${dn.length})</summary>${dn.map(x=>habitRow(x.m.freq,P[x.m.freq].k,x)).join("")}</details></div>`;
+ tb.innerHTML=h}
+$("todayBody").onclick=e=>{const b=e.target.closest("[data-step]");if(!b)return;const f=b.dataset.f,st=store(f,periods(ymd(new Date()))[f].k),id=b.dataset.id;st[id]=Math.max(0,Math.min(99,(+st[id]||0)+ +b.dataset.step));save();renderToday();renderTracker();renderOverview()};
+$("todayBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ymd(new Date()))[f].k)[c.dataset.chk]=c.checked?1:0;save();renderToday();renderTracker();renderOverview()};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderToday()});
+function renderAll(){renderToday();renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
+function show(id){closeNav();if(id==="today")renderToday();const nb=q('nav button[data-view="'+id+'"]');if(nb)$("viewTitle").textContent=nb.textContent;if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
 const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
 $("trackerDate").onchange=renderTracker;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
