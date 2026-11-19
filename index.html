@@ -36,6 +36,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 .stepper{display:flex;align-items:center;gap:6px;margin-top:1px}.stepper button{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:18px;font-weight:700;color:var(--green);cursor:pointer}
 .stepper span{min-width:38px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}.stepper span.ok{color:var(--green)}
 .rel{border-top:1px solid var(--line);padding:10px 0}.rel:first-child{border-top:0}.rel summary{cursor:pointer;font-weight:700}.rel h4{margin:12px 0 4px;font-size:13px;color:var(--green)}.rel ul{margin:0;padding-left:20px}
+.radarwrap{max-width:480px;margin:6px auto 0}.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:13px;margin-top:4px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 </style>
 </head>
 <body>
@@ -47,6 +49,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <button class="active" data-view="overview">Panoramica</button>
 <button data-view="areas">Aree e abitudini</button>
 <button data-view="daily">Tracker</button>
+<button data-view="radar">Radar</button>
 <button data-view="reviews">Revisioni</button>
 <button data-view="backup">Dati e backup</button>
 </nav>
@@ -54,6 +57,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <section id="overview" class="view">
 <div class="panel">
 <div class="row"><div><h2>Il tuo Cerchio della Vita</h2><div class="muted small">Valuta la tua soddisfazione attuale, non il tuo valore personale.</div></div><div><div class="kpi" id="overall">—</div><div class="small muted">media / 10</div></div></div>
+<div class="radarwrap" id="radarOverview"></div>
 <div id="areasGrid" class="grid" style="margin-top:16px"></div>
 </div>
 <div class="grid">
@@ -71,6 +75,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <div class="panel"><h2>Tracker</h2><p class="muted small">Abitudini giornaliere, settimanali e mensili. Le settimanali e le mensili si completano nel loro periodo (settimana lun–dom, mese di calendario) in base alla data scelta.</p>
 <div class="field"><label for="trackerDate">Data</label><div class="row"><input type="date" id="trackerDate"><button class="btn" id="todayBtn">Oggi</button></div></div></div>
 <div id="trackerBody"></div></section>
+<section id="radar" class="view hidden">
+<div class="panel"><h2>Radar del Cerchio della Vita</h2><p class="muted small">Confronta i punteggi di due mesi. Lo storico si aggiorna quando salvi un'area o la revisione mensile.</p>
+<div class="cmp"><div class="field"><label>Confronta con</label><select id="cmpA"></select></div><div class="field"><label>Mese</label><select id="cmpB"></select></div></div>
+<div class="radarwrap" id="radarCmp"></div><div class="legend" id="radarLegend"></div></div>
+<div class="panel"><h3>Variazioni</h3><div id="radarDelta"></div></div>
+</section>
 <section id="reviews" class="view hidden">
 <div class="panel"><h2>Revisione settimanale</h2><p class="muted small">Dedica 10–15 minuti a capire cosa ha funzionato e cosa correggere.</p>
 <div class="field"><label>Settimana che si conclude il</label><input type="date" id="weekDate"></div>
@@ -184,8 +194,12 @@ const defaults = [
 ["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
 ["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const APP_VERSION="1.1.0";
+const APP_VERSION="1.2.0";
 const RELEASES=[
+{v:"1.2.0",date:"18 novembre 2026",title:"Grafico radar e confronto mensile",sections:[
+["Novità",["Grafico radar del Cerchio della Vita nella Panoramica, con i punteggi attuali delle aree.","Nuova scheda «Radar»: confronto sovrapposto tra due mesi a scelta, con legenda e tabella delle variazioni per area (media inclusa).","Storico mensile dei punteggi: viene salvato un'istantanea del mese quando salvi un'area o la revisione mensile."]],
+["Miglioramenti",["Migrazione automatica: i punteggi attuali diventano la prima istantanea del mese corrente; i backup v1.0.0 e v1.1.0 si importano e si aggiornano da soli.","Salvando la revisione mensile di un mese, i punteggi correnti vengono registrati per quel mese (utile per completare lo storico)."]],
+["Nota",["Lo storico parte da questa versione: per confrontare due mesi servono punteggi salvati in mesi diversi."]]]},
 {v:"1.1.0",date:"18 novembre 2026",title:"Abitudini giornaliere, settimanali e mensili",sections:[
 ["Novità",["Ogni abitudine ha una frequenza: giornaliera, settimanale o mensile, modificabile dalla scheda dell'area.","Obiettivo per periodo (es. 3 volte a settimana) con contatore +/−; con obiettivo 1 resta una semplice spunta.","Il tracker è diviso in tre sezioni con avanzamento proprio: giorno, settimana (lun–dom) e mese di calendario in base alla data scelta.","Panoramica: nuovo riquadro «Ritmo delle abitudini» con il completamento di oggi, settimana e mese.","Frequenze predefinite sensate per le 72 abitudini di base.","Versione dell'app e note di rilascio nella sezione Dati e backup."]],
 ["Miglioramenti",["Migrazione automatica: le abitudini già salvate ricevono la frequenza predefinita (quelle aggiunte da te restano giornaliere); i log giornalieri restano intatti.","I backup JSON includono la versione; i backup v1.0.0 si importano e vengono aggiornati automaticamente.","Pulsante «Oggi» nel tracker."]],
@@ -203,7 +217,7 @@ const dcode=(i,j)=>{const c=(defaults[i]&&defaults[i][3][j]&&defaults[i][3][j][3
 const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true,...dcode(i,j)}))})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
 function migrate(d){d.logs=d.logs||{};d.reviews=d.reviews||{weeks:{},months:{}};d.plogs=d.plogs||{};d.plogs.weeks=d.plogs.weeks||{};d.plogs.months=d.plogs.months||{};
  d.areas.forEach(a=>a.micros.forEach(m=>{if(!m.freq){const p=/^\d+_\d+$/.test(m.id)?m.id.split("_").map(Number):null;Object.assign(m,p?dcode(p[0],p[1]):{freq:"daily",target:1})}if(!(m.target>=1))m.target=1}));
- d.appVersion=APP_VERSION;return d}
+ d.snapshots=d.snapshots||{};if(!Object.keys(d.snapshots).length)d.snapshots[ymd(new Date()).slice(0,7)]=Object.fromEntries(d.areas.map(a=>[a.id,+a.score]));d.appVersion=APP_VERSION;return d}
 let data=null;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}
 data=migrate(data&&data.areas?data:fresh());
 function save(){localStorage.setItem(key,JSON.stringify(data))}save();
@@ -242,7 +256,7 @@ function renderDetail(){
   if(p&&!a.priority&&data.areas.filter(x=>x.priority).length>=3){alert("Puoi selezionare al massimo 3 priorità.");return}
   a.description=$("desc").value;a.score=+$("score").value;a.priority=p;
   a.micros.forEach((m,i)=>{m.label=q(`[data-label="${i}"]`).value;m.habit=q(`[data-habit="${i}"]`).value;m.enabled=q(`[data-enabled="${i}"]`).checked;m.freq=q(`[data-freq="${i}"]`).value;m.target=m.freq==="daily"?1:Math.max(1,Math.min(99,parseInt(q(`[data-target="${i}"]`).value)||1))});
-  save();renderAll();renderDetail();
+  snap();save();renderAll();renderDetail();
  };
  $("addMicro").onclick=()=>{a.micros.push({id:"custom_"+Date.now(),name:"Nuova",label:"Nuova microcategoria",habit:"Definisci un'azione concreta",enabled:true,freq:"daily",target:1});save();renderDetail()};
  $("microList").querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>{if(confirm("Eliminare questa microcategoria?")){a.micros.splice(+b.dataset.delete,1);save();renderDetail();renderAll()}});
@@ -257,13 +271,39 @@ $("trackerBody").onclick=e=>{const b=e.target.closest("[data-step]");if(!b)retur
 $("trackerBody").onchange=e=>{const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderOverview()};
 function renderHistory(){let out=[];Object.entries(data.reviews.weeks||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Settimana · ${d}</strong><div>${esc(r.next||r.wins||"Revisione salvata")}</div></div>`));Object.entries(data.reviews.months||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Mese · ${d}</strong><div>${esc(r.action||r.best||"Revisione salvata")}</div></div>`));$("reviewHistory").innerHTML=out.join("")||"Ancora nessuna revisione salvata."}
 function renderReleases(){document.querySelectorAll(".appv").forEach(e=>e.textContent="v"+APP_VERSION);$("releaseNotes").innerHTML=RELEASES.map((r,i)=>`<details class="rel" ${i===0?"open":""}><summary>v${r.v} · ${esc(r.title)}${r.date?` <span class="small muted">(${r.date})</span>`:""}</summary>${r.sections.map(s=>`<h4>${s[0]}</h4><ul class="small">${s[1].map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`).join("")}</details>`).join("")}
-function renderAll(){renderOverview();renderAreaPicker();renderTracker();renderHistory()}
+const MC=["#c18b42","#315c49"];
+const mlab=k=>{const [y,m]=k.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("it-IT",{month:"short",year:"numeric"})};
+const scoresNow=()=>Object.fromEntries(data.areas.map(a=>[a.id,+a.score]));
+function snap(){data.snapshots[ymd(new Date()).slice(0,7)]=scoresNow()}
+function radarSVG(series){const n=data.areas.length,C=210,R=125,ang=i=>-Math.PI/2+2*Math.PI*i/n,pt=(i,v)=>[C+R*v/10*Math.cos(ang(i)),C+R*v/10*Math.sin(ang(i))];
+ let g="";[2,4,6,8,10].forEach(l=>{g+=`<polygon points="${data.areas.map((_,i)=>pt(i,l).join(",")).join(" ")}" fill="none" stroke="#d8dfd9"/>`});
+ data.areas.forEach((a,i)=>{const [x,y]=pt(i,10),[lx,ly]=pt(i,11.7),c=Math.cos(ang(i));g+=`<line x1="${C}" y1="${C}" x2="${x}" y2="${y}" stroke="#d8dfd9"/><text x="${lx}" y="${ly}" text-anchor="${Math.abs(c)<.2?"middle":c>0?"start":"end"}" dominant-baseline="middle" font-size="12" fill="#1d2924">${a.icon} ${esc(a.name)}</text>`});
+ series.forEach(s=>{const pts=data.areas.map((a,i)=>pt(i,+s.sc[a.id]||0));g+=`<polygon points="${pts.map(p=>p.join(",")).join(" ")}" fill="${s.color}" fill-opacity="${s.fill}" stroke="${s.color}" stroke-width="2" ${s.dash?'stroke-dasharray="6 4"':""}/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${s.color}"/>`).join("")});
+ return `<svg viewBox="-50 -10 520 440" width="100%" role="img" aria-label="Grafico radar del Cerchio della Vita">${g}</svg>`}
+let cmpA,cmpB;
+function renderRadar(){
+ $("radarOverview").innerHTML=radarSVG([{sc:scoresNow(),color:MC[1],fill:.22}]);
+ const ks=Object.keys(data.snapshots).sort();
+ if(!ks.includes(cmpB))cmpB=ks[ks.length-1];
+ if(cmpA!==null&&!ks.includes(cmpA))cmpA=ks.length>1?ks[ks.length-2]:null;
+ const opt=sel=>ks.map(k=>`<option value="${k}" ${k===sel?"selected":""}>${mlab(k)}</option>`).join("");
+ $("cmpA").innerHTML='<option value="">— nessuno —</option>'+opt(cmpA);$("cmpB").innerHTML=opt(cmpB);
+ const ser=[];if(cmpA)ser.push({sc:data.snapshots[cmpA],color:MC[0],fill:.06,dash:1,name:mlab(cmpA)});ser.push({sc:data.snapshots[cmpB],color:MC[1],fill:.22,name:mlab(cmpB)});
+ $("radarCmp").innerHTML=radarSVG(ser);
+ $("radarLegend").innerHTML=ser.map(x=>`<span><i class="dot" style="background:${x.color}"></i>${x.name}</span>`).join("");
+ if(!cmpA){$("radarDelta").innerHTML='<div class="empty">Salva i punteggi in almeno due mesi diversi per vedere le variazioni.</div>';return}
+ const A=data.snapshots[cmpA],B=data.snapshots[cmpB],val=(S,a)=>+S[a.id]||0,avg=S=>data.areas.reduce((t,a)=>t+val(S,a),0)/data.areas.length;
+ const line=(name,va,vb,d,b)=>`<div class="row small" style="padding:7px 0;border-top:1px solid var(--line)"><span>${b?"<strong>"+name+"</strong>":name}</span><span>${va} → ${vb} <strong style="color:${d>0?"var(--green)":d<0?"var(--red)":"var(--muted)"}">${d>0?"+":""}${d}</strong></span></div>`;
+ const r1=x=>Math.round(x*10)/10;
+ $("radarDelta").innerHTML=line("Media",r1(avg(A)),r1(avg(B)),r1(avg(B)-avg(A)),1)+data.areas.map(a=>line(`${a.icon} ${esc(a.name)}`,val(A,a),val(B,a),val(B,a)-val(A,a))).join("")}
+$("cmpA").onchange=e=>{cmpA=e.target.value||null;renderRadar()};$("cmpB").onchange=e=>{cmpB=e.target.value;renderRadar()};
+function renderAll(){renderRadar();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
 function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
 const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
 $("trackerDate").onchange=renderTracker;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
 $("saveWeek").onclick=()=>{const d=$("weekDate").value;if(!d)return;data.reviews.weeks[d]={wins:$("wins").value,obstacles:$("obstacles").value,next:$("next").value};save();renderHistory();$("weekSaved").textContent=" · Salvato"};
-$("saveMonth").onclick=()=>{const d=$("monthDate").value;if(!d)return;data.reviews.months[d]={best:$("monthBest").value,neglected:$("monthNeglected").value,action:$("monthAction").value};save();renderHistory();$("monthSaved").textContent=" · Salvato"};
+$("saveMonth").onclick=()=>{const d=$("monthDate").value;if(!d)return;data.snapshots[d]=scoresNow();data.reviews.months[d]={best:$("monthBest").value,neglected:$("monthNeglected").value,action:$("monthAction").value};save();renderHistory();$("monthSaved").textContent=" · Salvato"};
 $("export").onclick=()=>{data.appVersion=APP_VERSION;const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="life-os-backup-v"+APP_VERSION+"-"+today+".json";a.click();URL.revokeObjectURL(a.href);$("backupStatus").textContent="Backup esportato."};
 $("importFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.areas||!d.logs||!d.reviews)throw Error();const from=d.appVersion||"1.0.0";if(confirm("Importare questo backup (v"+from+")? I dati attuali verranno sostituiti.")){data=migrate(d);save();renderAll();renderDetail();$("backupStatus").textContent="Backup v"+from+" importato correttamente"+(from!==APP_VERSION?" e aggiornato alla v"+APP_VERSION:"")+"."}}catch(err){alert("File non valido o non riconosciuto.")}e.target.value=""};
 $("reset").onclick=()=>{if(confirm("Sei sicuro? Tutti i dati locali verranno cancellati.")){localStorage.removeItem(key);location.reload()}};
