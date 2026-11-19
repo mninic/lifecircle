@@ -38,6 +38,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 .rel{border-top:1px solid var(--line);padding:10px 0}.rel:first-child{border-top:0}.rel summary{cursor:pointer;font-weight:700}.rel h4{margin:12px 0 4px;font-size:13px;color:var(--green)}.rel ul{margin:0;padding-left:20px}
 .radarwrap{max-width:480px;margin:6px auto 0}.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:13px;margin-top:4px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.wks{display:flex;gap:4px;height:72px;margin:10px 0 4px}.wk{flex:1;display:flex;flex-direction:column}.wk b{flex:1;display:flex;align-items:flex-end;background:#edf0ec;border-radius:4px}
+.wk b span{width:100%;border-radius:4px;background:var(--gold)}.wk b span.ok{background:#668c73}.wk i{font-style:normal;font-size:9px;text-align:center;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -50,6 +52,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <button data-view="areas">Aree e abitudini</button>
 <button data-view="daily">Tracker</button>
 <button data-view="radar">Radar</button>
+<button data-view="cycle">12 Settimane</button>
+<button data-view="dash">Dashboard</button>
 <button data-view="reviews">Revisioni</button>
 <button data-view="backup">Dati e backup</button>
 </nav>
@@ -81,6 +85,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 <div class="radarwrap" id="radarCmp"></div><div class="legend" id="radarLegend"></div></div>
 <div class="panel"><h3>Variazioni</h3><div id="radarDelta"></div></div>
 </section>
+<section id="cycle" class="view hidden"><div id="cycleBody"></div></section>
+<section id="dash" class="view hidden"><div id="dashBody"></div></section>
 <section id="reviews" class="view hidden">
 <div class="panel"><h2>Revisione settimanale</h2><p class="muted small">Dedica 10–15 minuti a capire cosa ha funzionato e cosa correggere.</p>
 <div class="field"><label>Settimana che si conclude il</label><input type="date" id="weekDate"></div>
@@ -194,8 +200,12 @@ const defaults = [
 ["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
 ["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
 ];
-const APP_VERSION="1.2.0";
+const APP_VERSION="1.3.0";
 const RELEASES=[
+{v:"1.3.0",date:"19 novembre 2026",title:"12 Week Year e dashboard evolutiva",sections:[
+["Novità",["Scheda «12 Settimane»: avvia un ciclo di 12 settimane (parte da un lunedì), definisci gli obiettivi trimestrali e collega a ciascuno le abitudini che lo fanno avanzare.","Percentuale di esecuzione per obiettivo e per ciclo, con grafico settimana per settimana (verde dall'85% in su) e percentuale per ogni abitudine collegata.","Cicli conclusi archiviati con la percentuale finale.","Scheda «Dashboard»: punteggio nel tempo (media o singola area), completamento abitudini delle ultime 12 settimane e confronto tra periodi (ultima settimana, 4 o 12 settimane contro le precedenti) per area.","Indicatori in testa: media attuale con variazione, completamento ultime 4 settimane, avanzamento del ciclo attivo."]],
+["Come si calcola",["Giornaliere: giorni completati su giorni trascorsi. Settimanali: volte fatte (max obiettivo) su obiettivo della settimana. Mensili: volte fatte (max obiettivo) su obiettivo di ogni mese del ciclo.","Nel grafico settimanale e nella dashboard le mensili non compaiono; la settimana in corso è parziale.","La dashboard parte dalla prima settimana con almeno un'abitudine registrata."]],
+["Miglioramenti",["Migrazione automatica: cicli e obiettivi sono salvati nel backup JSON; i backup v1.0.0, v1.1.0 e v1.2.0 si importano e si aggiornano da soli."]]]},
 {v:"1.2.0",date:"18 novembre 2026",title:"Grafico radar e confronto mensile",sections:[
 ["Novità",["Grafico radar del Cerchio della Vita nella Panoramica, con i punteggi attuali delle aree.","Nuova scheda «Radar»: confronto sovrapposto tra due mesi a scelta, con legenda e tabella delle variazioni per area (media inclusa).","Storico mensile dei punteggi: viene salvato un'istantanea del mese quando salvi un'area o la revisione mensile."]],
 ["Miglioramenti",["Migrazione automatica: i punteggi attuali diventano la prima istantanea del mese corrente; i backup v1.0.0 e v1.1.0 si importano e si aggiornano da soli.","Salvando la revisione mensile di un mese, i punteggi correnti vengono registrati per quel mese (utile per completare lo storico)."]],
@@ -217,7 +227,7 @@ const dcode=(i,j)=>{const c=(defaults[i]&&defaults[i][3][j]&&defaults[i][3][j][3
 const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true,...dcode(i,j)}))})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
 function migrate(d){d.logs=d.logs||{};d.reviews=d.reviews||{weeks:{},months:{}};d.plogs=d.plogs||{};d.plogs.weeks=d.plogs.weeks||{};d.plogs.months=d.plogs.months||{};
  d.areas.forEach(a=>a.micros.forEach(m=>{if(!m.freq){const p=/^\d+_\d+$/.test(m.id)?m.id.split("_").map(Number):null;Object.assign(m,p?dcode(p[0],p[1]):{freq:"daily",target:1})}if(!(m.target>=1))m.target=1}));
- d.snapshots=d.snapshots||{};if(!Object.keys(d.snapshots).length)d.snapshots[ymd(new Date()).slice(0,7)]=Object.fromEntries(d.areas.map(a=>[a.id,+a.score]));d.appVersion=APP_VERSION;return d}
+ d.snapshots=d.snapshots||{};if(!Object.keys(d.snapshots).length)d.snapshots[ymd(new Date()).slice(0,7)]=Object.fromEntries(d.areas.map(a=>[a.id,+a.score]));d.cycles=d.cycles||[];if(!d.cycles.some(c=>c.id===d.activeCycle))d.activeCycle=null;d.appVersion=APP_VERSION;return d}
 let data=null;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}
 data=migrate(data&&data.areas?data:fresh());
 function save(){localStorage.setItem(key,JSON.stringify(data))}save();
@@ -297,8 +307,84 @@ function renderRadar(){
  const r1=x=>Math.round(x*10)/10;
  $("radarDelta").innerHTML=line("Media",r1(avg(A)),r1(avg(B)),r1(avg(B)-avg(A)),1)+data.areas.map(a=>line(`${a.icon} ${esc(a.name)}`,val(A,a),val(B,a),val(B,a)-val(A,a))).join("")}
 $("cmpA").onchange=e=>{cmpA=e.target.value||null;renderRadar()};$("cmpB").onchange=e=>{cmpB=e.target.value;renderRadar()};
-function renderAll(){renderRadar();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const mondayOf=d=>addDays(d,-((d.getDay()+6)%7));
+const todayD=()=>parseYmd(ymd(new Date()));
+const findMicro=id=>{for(const a of data.areas){const m=a.micros.find(x=>x.id===id);if(m)return{m,a}}return null};
+const weekStart=k=>{const [y,w]=k.split("-W").map(Number);return addDays(mondayOf(new Date(y,0,4)),(w-1)*7)};
+const col=d=>d>0?"var(--green)":d<0?"var(--red)":"var(--muted)";
+const sg=d=>(d>0?"+":"")+d;
+function wc(m,ws,up){
+ if(m.freq==="daily"){let e=0,a=0;for(let i=0;i<7;i++){const d=addDays(ws,i);if(d>up)break;e++;if(count("daily",ymd(d),m.id))a++}return{e,a}}
+ if(m.freq==="weekly")return{e:m.target,a:Math.min(m.target,count("weekly",isoWeek(ws).key,m.id))};
+ return null}
+function goalStats(g,c,T){
+ const cs=parseYmd(c.start),ms=g.habitIds.map(findMicro).filter(Boolean).map(x=>x.m),weeks=[];let E=0,A=0;
+ for(let w=0;w<12;w++){const ws=addDays(cs,w*7),started=ws<=T;let e=0,a=0;
+  if(started)ms.forEach(m=>{const r=wc(m,ws,T);if(r){e+=r.e;a+=r.a}});
+  weeks.push({n:w+1,started,e,a,pct:started&&e?Math.round(a/e*100):null});E+=e;A+=a}
+ const months=new Set();for(let i=0;i<84;i++){const d=addDays(cs,i);if(d>T)break;months.add(ymd(d).slice(0,7))}
+ ms.filter(m=>m.freq==="monthly").forEach(m=>months.forEach(ym=>{const v=Math.min(m.target,count("monthly",ym,m.id));E+=m.target;A+=v}));
+ return{weeks,E,A,pct:E?Math.round(A/E*100):null}}
+function cyclePct(c){const T=todayD(),end=addDays(parseYmd(c.start),83),t=T<end?T:end;let E=0,A=0;c.goals.forEach(g=>{const s=goalStats(g,c,t);E+=s.E;A+=s.A});return E?Math.round(A/E*100):null}
+const bars=w=>`<div class="wks">${w.map(x=>`<div class="wk" title="Settimana ${x.n}"><b><span class="${x.pct>=85?"ok":""}" style="height:${x.pct==null?0:Math.min(100,x.pct)}%"></span></b><i>${x.n}</i></div>`).join("")}</div>`;
+let ed=null;
+function editor(){const a=data.areas.find(x=>x.id===ed.areaId),oth=ed.habits.filter(id=>!a.micros.some(m=>m.id===id)).length;
+ return `<div class="micro"><div class="field"><label>Obiettivo trimestrale</label><input data-gt value="${esc(ed.title)}" placeholder="Es. Arrivare a 3 allenamenti stabili a settimana"></div><div class="field"><label>Area</label><select data-garea>${data.areas.map(x=>`<option value="${x.id}" ${x.id===ed.areaId?"selected":""}>${x.icon} ${esc(x.name)}</option>`).join("")}</select></div><div class="field"><label>Abitudini collegate</label>${a.micros.filter(m=>m.enabled).map(m=>`<div class="habit"><input type="checkbox" data-gh="${esc(m.id)}" ${ed.habits.includes(m.id)?"checked":""}><label>${esc(m.habit)} <span class="tag">${tagOf(m)}</span></label></div>`).join("")}${oth?`<div class="small muted">+ ${oth} collegate da altre aree</div>`:""}</div><div class="actions"><button class="btn primary" data-act="saveGoal">Salva</button><button class="btn" data-act="cancel">Annulla</button><button class="btn danger" data-act="delGoal">Elimina</button></div></div>`}
+function renderCycle(){const T=todayD(),c=data.cycles.find(x=>x.id===data.activeCycle);let h="";
+ if(!c)h=`<div class="panel"><h2>12 Week Year</h2><p class="muted small">Un ciclo dura 12 settimane. Scegli 1–3 obiettivi trimestrali e collegali alle abitudini che li fanno avanzare: il sistema misura quanto le esegui. Dall'85% di esecuzione sei in linea.</p><div class="cmp"><div class="field"><label>Nome ciclo</label><input id="cyName" placeholder="Es. Ciclo 1"></div><div class="field"><label>Inizio (diventa un lunedì)</label><input type="date" id="cyStart" value="${ymd(mondayOf(T))}"></div></div><button class="btn primary" data-act="create">Avvia ciclo</button></div>`;
+ else{const cs=parseYmd(c.start),days=Math.round((T-cs)/864e5),wk=days<0?0:Math.min(12,Math.floor(days/7)+1);
+  const gs=c.goals.map(g=>({g,s:goalStats(g,c,T)}));let E=0,A=0;gs.forEach(x=>{E+=x.s.E;A+=x.s.A});const pct=E?Math.round(A/E*100):null;
+  const wsum=Array.from({length:12},(_,i)=>{let e=0,a=0;gs.forEach(x=>{e+=x.s.weeks[i].e;a+=x.s.weeks[i].a});return{n:i+1,pct:e?Math.round(a/e*100):null}});
+  h=`<div class="panel"><div class="row"><div><h2>${esc(c.name)}</h2><div class="muted small">${days<0?"Inizia il "+fmt(cs):days>83?"Ciclo concluso":"Settimana "+wk+" di 12"} · ${fmt(cs)} – ${fmt(addDays(cs,83))}</div></div><div><div class="kpi">${pct==null?"—":pct+"%"}</div><div class="small muted">esecuzione</div></div></div><div class="track"><span style="width:${pct||0}%"></span></div>${bars(wsum)}<div class="small muted">Esecuzione per settimana · verde dall'85%</div></div>`
+  +gs.map(({g,s})=>{if(ed&&ed.id===g.id)return `<div class="panel">${editor()}</div>`;const a=data.areas.find(x=>x.id===g.areaId)||data.areas[0];
+   const chips=g.habitIds.map(id=>{const f=findMicro(id);if(!f)return"";const p=goalStats({habitIds:[id]},c,T).pct;return `<span class="tag" style="margin:2px 4px 2px 0;display:inline-block">${esc(f.m.habit)} · ${tagOf(f.m)} · ${p==null?"–":p+"%"}</span>`}).join("")||'<span class="small muted">Nessuna abitudine collegata: modifica l\'obiettivo.</span>';
+   return `<div class="panel"><div class="row"><strong>${esc(g.title)}</strong><span class="score">${s.pct==null?"—":s.pct+"%"}</span></div><div class="small muted">${a.icon} ${esc(a.name)}</div><div class="track"><span style="width:${s.pct||0}%"></span></div>${bars(s.weeks)}<div>${chips}</div><div class="actions"><button class="btn" data-act="edit" data-id="${g.id}">Modifica</button></div></div>`}).join("")
+  +`<div class="panel"><div class="actions" style="margin:0"><button class="btn primary" data-act="addGoal">+ Aggiungi obiettivo</button><button class="btn danger" data-act="close">Chiudi ciclo</button></div></div>`}
+ const old=data.cycles.filter(x=>x.closed);
+ if(old.length)h+=`<div class="panel"><h3>Cicli conclusi</h3>${old.map(x=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(x.name)} · ${fmt(parseYmd(x.start))} – ${fmt(addDays(parseYmd(x.start),83))}</span><strong>${x.finalPct==null?"–":x.finalPct+"%"}</strong></div>`).join("")}</div>`;
+ $("cycleBody").innerHTML=h}
+$("cycleBody").onclick=e=>{const b=e.target.closest("[data-act]");if(!b)return;const act=b.dataset.act,c=data.cycles.find(x=>x.id===data.activeCycle);
+ if(act==="create"){const sd=$("cyStart").value;if(!sd)return;const cy={id:"c"+Date.now(),name:$("cyName").value.trim()||"Ciclo "+(data.cycles.length+1),start:ymd(mondayOf(parseYmd(sd))),goals:[]};data.cycles.push(cy);data.activeCycle=cy.id}
+ else if(act==="addGoal"){const g={id:"g"+Date.now(),title:"",areaId:(data.areas.find(a=>a.priority)||data.areas[0]).id,habitIds:[]};c.goals.push(g);ed={id:g.id,title:"",areaId:g.areaId,habits:[],isNew:true}}
+ else if(act==="edit"){const g=c.goals.find(x=>x.id===b.dataset.id);ed={id:g.id,title:g.title,areaId:g.areaId,habits:[...g.habitIds]}}
+ else if(act==="saveGoal"){const g=c.goals.find(x=>x.id===ed.id);g.title=ed.title.trim()||"Obiettivo senza titolo";g.areaId=ed.areaId;g.habitIds=ed.habits;ed=null}
+ else if(act==="cancel"){if(ed&&ed.isNew)c.goals=c.goals.filter(x=>x.id!==ed.id);ed=null}
+ else if(act==="delGoal"){if(!confirm("Eliminare questo obiettivo?"))return;c.goals=c.goals.filter(x=>x.id!==ed.id);ed=null}
+ else if(act==="close"){if(!confirm("Chiudere il ciclo? Resterà nello storico."))return;c.closed=true;c.finalPct=cyclePct(c);data.activeCycle=null}
+ save();renderCycle();renderDash()};
+$("cycleBody").oninput=e=>{if(e.target.matches("[data-gt]"))ed.title=e.target.value};
+$("cycleBody").onchange=e=>{const t=e.target;if(t.matches("[data-garea]")){ed.areaId=+t.value;renderCycle()}else if(t.matches("[data-gh]")){const id=t.dataset.gh;ed.habits=t.checked?[...ed.habits,id]:ed.habits.filter(x=>x!==id)}};
+function lineSVG(p,max,u){const W=360,H=170,L=34,R=10,T=10,B=26,n=p.length,X=i=>L+(n>1?i*(W-L-R)/(n-1):(W-L-R)/2),Y=v=>T+(H-T-B)*(1-v/max);
+ let g=[0,.5,1].map(f=>{const y=Y(max*f);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#e2e7e1"/><text x="${L-5}" y="${y}" font-size="10" text-anchor="end" dominant-baseline="middle" fill="#68756e">${Math.round(max*f)}${u}</text>`}).join("");
+ const pts=p.map((d,i)=>d.v==null?null:[X(i),Y(d.v)]);
+ pts.forEach((t,i)=>{if(t&&i&&pts[i-1])g+=`<line x1="${pts[i-1][0]}" y1="${pts[i-1][1]}" x2="${t[0]}" y2="${t[1]}" stroke="#315c49" stroke-width="2.5"/>`});
+ g+=pts.map((t,i)=>t?`<circle cx="${t[0]}" cy="${t[1]}" r="3.5" fill="#315c49"/><text x="${t[0]}" y="${t[1]-8}" font-size="9" text-anchor="middle" fill="#315c49">${p[i].v}</text>`:"").join("");
+ p.forEach((d,i)=>{if(n<=6||i%2===0||i===n-1)g+=`<text x="${X(i)}" y="${H-8}" font-size="10" text-anchor="middle" fill="#68756e">${d.x}</text>`});
+ return `<svg viewBox="0 0 ${W} ${H}" width="100%">${g}</svg>`}
+let dashArea="all",cmpN=4;
+function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapshots).sort(),empty='<div class="empty">Ancora nessun dato da mostrare.</div>';
+ const avg=(S,id)=>id==="all"?data.areas.reduce((t,a)=>t+(+S[a.id]||0),0)/data.areas.length:(+S[id]||0),r1=x=>Math.round(x*10)/10;
+ let fm=null;const up=d=>{if(!fm||d<fm)fm=d};
+ Object.keys(data.logs).forEach(k=>{if(Object.values(data.logs[k]).some(Boolean))up(mondayOf(parseYmd(k)))});
+ Object.entries(data.plogs.weeks).forEach(([k,o])=>{if(Object.values(o).some(Boolean))up(weekStart(k))});
+ const rate=(ws0,n,flt)=>{let e=0,a=0;for(let i=0;i<n;i++){const ws=addDays(ws0,i*7);if(!fm||ws<fm)continue;const wend=addDays(ws,6),lim=wend<T?wend:T;items().forEach(x=>{if(flt&&!flt(x))return;const r=wc(x.m,ws,lim);if(r){e+=r.e;a+=r.a}})}return e?Math.round(a/e*100):null};
+ const cell=(a,b)=>a==null||b==null?'<span class="muted">–</span>':`${a}% → ${b}% <strong style="color:${col(b-a)}">${sg(b-a)}</strong>`;
+ const trend=Array.from({length:12},(_,i)=>{const ws=addDays(cm,(i-11)*7);return{x:fmt(ws),v:rate(ws,1)}});
+ const sp=ks.map(k=>({x:mlab(k),v:r1(avg(data.snapshots[k],dashArea))}));
+ const cur=ks.length?data.snapshots[ks[ks.length-1]]:null,prev=ks.length>1?data.snapshots[ks[ks.length-2]]:null;
+ const dAvg=cur&&prev?r1(avg(cur,"all")-avg(prev,"all")):null,r4=rate(addDays(cm,-28),4),cy=data.cycles.find(x=>x.id===data.activeCycle),cp=cy?cyclePct(cy):null;
+ const kpi=(v,t,s)=>`<div><div class="kpi">${v}</div><div class="small muted">${t}</div>${s||""}</div>`;
+ const B=addDays(cm,-7*cmpN),A0=addDays(cm,-14*cmpN);
+ const row=(l,sc,rt)=>`<div class="row small" style="padding:8px 0;border-top:1px solid var(--line);align-items:flex-start"><span>${l}</span><span style="text-align:right">Punteggio: ${sc}<br>Abitudini: ${rt}</span></div>`;
+ const scCell=(S1,S2,id)=>S1&&S2?`${r1(avg(S1,id))} → ${r1(avg(S2,id))} <strong style="color:${col(r1(avg(S2,id)-avg(S1,id)))}">${sg(r1(avg(S2,id)-avg(S1,id)))}</strong>`:'<span class="muted">–</span>';
+ $("dashBody").innerHTML=`<div class="panel"><h2>Dashboard</h2><p class="muted small">Come cambiano punteggi e abitudini nel tempo.</p><div class="grid" style="margin-top:12px">${kpi(cur?r1(avg(cur,"all")):"—","media punteggi",dAvg==null?"":`<div class="small" style="color:${col(dAvg)}">${sg(dAvg)} vs mese precedente</div>`)}${kpi(r4==null?"—":r4+"%","abitudini · ultime 4 settimane")}${kpi(cp==null?"—":cp+"%","ciclo 12 settimane"+(cy?"":" (nessun ciclo attivo)"))}</div></div>
+<div class="panel"><div class="row"><h3>Punteggio nel tempo</h3><select data-dasharea style="width:auto"><option value="all">Media</option>${data.areas.map(a=>`<option value="${a.id}" ${String(a.id)===String(dashArea)?"selected":""}>${a.icon} ${esc(a.name)}</option>`).join("")}</select></div>${ks.length?lineSVG(sp,10,""):empty}<div class="small muted">Un punto per mese, dalle istantanee dei punteggi.</div></div>
+<div class="panel"><h3>Completamento abitudini · 12 settimane</h3>${fm?lineSVG(trend,100,"%"):empty}<div class="small muted">Giornaliere e settimanali; le mensili non sono incluse e l'ultima settimana è parziale.</div></div>
+<div class="panel"><div class="row"><h3>Confronto tra periodi</h3><select data-cmpn style="width:auto">${[[1,"Ultima settimana"],[4,"Ultime 4 settimane"],[12,"Ultime 12 settimane"]].map(o=>`<option value="${o[0]}" ${o[0]===cmpN?"selected":""}>${o[1]}</option>`).join("")}</select></div><p class="small muted">Periodo scelto contro quello precedente di pari durata (settimane complete). Punteggi: ultimi due mesi salvati.</p>${row("<strong>Totale</strong>",scCell(prev,cur,"all"),cell(rate(A0,cmpN),rate(B,cmpN)))}${data.areas.map(a=>row(`${a.icon} ${esc(a.name)}`,scCell(prev,cur,a.id),cell(rate(A0,cmpN,x=>x.a.id===a.id),rate(B,cmpN,x=>x.a.id===a.id)))).join("")}</div>`}
+$("dashBody").onchange=e=>{const t=e.target;if(t.matches("[data-dasharea]")){dashArea=t.value;renderDash()}else if(t.matches("[data-cmpn]")){cmpN=+t.value;renderDash()}};
+function renderAll(){renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory()}
+function show(id){if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
 const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
 $("trackerDate").onchange=renderTracker;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
