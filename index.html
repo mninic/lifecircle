@@ -151,91 +151,23 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 <div id="toast"></div>
 <script>
 const defaults = [
-["Health","Corpo forte, sano, atletico e pieno di energia","🏋️",[
-["Strength","Allenamento di forza","Allenamento pesi 3 volte a settimana","w3"],
-["Cardiovascular","Resistenza cardiovascolare","Fare 2 sessioni aerobiche a settimana","w2"],
-["Mobility","Mobilità e flessibilità","Fare 10 minuti di mobilità","d"],
-["Nutrition","Alimentazione","Pianificare pasti equilibrati e vari","w1"],
-["Hydration","Idratazione","Bere acqua regolarmente","d"],
-["Sleep","Sonno","Proteggere 7–9 ore di sonno","d"],
-["Recovery","Recupero","Prevedere riposo e recupero","w1"],
-["Prevention","Prevenzione","Programmare controlli e prevenzione","m"]]],
-["Work","Crescita professionale, autonomia e realizzazione","💼",[
-["Productivity","Produttività","Definire le 3 priorità del giorno","d"],
-["Deep Work","Lavoro concentrato","Fare blocchi di lavoro senza distrazioni","d"],
-["Organization","Organizzazione","Pianificare la settimana","w"],
-["Execution","Esecuzione","Chiudere attività e rispettare scadenze","d"],
-["Professional Skills","Competenze professionali","Studiare una competenza utile","w"],
-["Communication","Comunicazione","Allenare ascolto, chiarezza e negoziazione","w"],
-["Leadership","Leadership","Prendere iniziativa e responsabilità","w"],
-["Entrepreneurship","Imprenditorialità","Avanzare ogni settimana sul proprio business","w"]]],
-["Family","Relazioni familiari solide e rispettose","🏡",[
-["Presence","Presenza","Dedicare tempo di qualità alla famiglia","w"],
-["Communication","Comunicazione","Fare una conversazione autentica","w"],
-["Listening","Ascolto","Ascoltare senza interrompere o giudicare","d"],
-["Support","Supporto","Offrire aiuto concreto quando serve","w"],
-["Traditions","Tradizioni","Creare momenti condivisi","m"],
-["Boundaries","Confini sani","Esprimere con rispetto i propri limiti","w"],
-["Appreciation","Apprezzamento","Esprimere gratitudine","d"]]],
-["Friends","Amicizie profonde e autentiche","🤝",[
-["Connection","Connessione","Contattare un amico","w"],
-["Quality Time","Tempo di qualità","Organizzare un incontro senza distrazioni","m"],
-["Initiative","Iniziativa","Proporre un'attività","m"],
-["New Connections","Nuove conoscenze","Frequentare un contesto sociale nuovo","m"],
-["Reliability","Affidabilità","Mantenere gli impegni presi","w"],
-["Vulnerability","Autenticità","Condividere anche pensieri personali","w"]]],
-["Romance","Relazione sentimentale sana e appagante","❤️",[
-["Self Love","Autostima","Coltivare interessi e autonomia personale","w"],
-["Availability","Disponibilità emotiva","Essere aperto a conoscere e farsi conoscere","w"],
-["Communication","Comunicazione","Esprimere bisogni e desideri","w"],
-["Vulnerability","Vulnerabilità","Mostrarsi autentici","w"],
-["Dating","Conoscenza","Creare occasioni per incontrare persone","w"],
-["Empathy","Empatia","Ascoltare e comprendere l'altro","d"],
-["Boundaries","Confini","Rispettare i propri e altrui limiti","w"]]],
-["Sex","Sessualità consapevole e soddisfacente","🌿",[
-["Sexual Health","Salute sessuale","Curare prevenzione e controlli","m"],
-["Self Awareness","Consapevolezza corporea","Conoscere il proprio corpo e i propri desideri","w"],
-["Confidence","Sicurezza","Lavorare sull'immagine e la fiducia in sé","w"],
-["Intimacy","Intimità","Coltivare vicinanza emotiva","w"],
-["Communication","Comunicazione","Parlare apertamente di desideri e limiti","w"],
-["Consent","Consenso","Rispettare consenso e confini reciproci","w"],
-["Education","Educazione","Informarsi da fonti affidabili","m"]]],
-["Creativity","Creare, sperimentare e trasformare idee in realtà","🎨",[
-["Ideation","Ideazione","Annotare idee e intuizioni","d"],
-["Experimentation","Sperimentazione","Provare qualcosa di nuovo","w"],
-["Problem Solving","Risoluzione problemi","Cercare soluzioni alternative","w"],
-["Building","Creazione","Dedicare tempo a un progetto personale","w"],
-["Expression","Espressione","Coltivare un'attività creativa","w"],
-["Play","Gioco","Fare qualcosa solo per il piacere di farlo","w"]]],
-["Learning","Curiosità, conoscenza e apprendimento continuo","📚",[
-["Reading","Lettura","Leggere 20 minuti","d"],
-["Technical Skills","Competenze tecniche","Studiare una competenza professionale","w"],
-["Business Knowledge","Conoscenza business","Studiare imprenditoria e gestione","w"],
-["Financial Education","Educazione finanziaria","Approfondire un tema finanziario","w"],
-["Critical Thinking","Pensiero critico","Mettere in discussione un'idea","w"],
-["Languages","Lingue","Praticare una lingua straniera","w"],
-["Application","Applicazione","Mettere in pratica ciò che si impara","w"]]],
-["Finances","Stabilità, patrimonio e libertà di scelta","💰",[
-["Budgeting","Budget","Registrare e rivedere entrate e uscite","w"],
-["Saving","Risparmio","Accantonare una quota delle entrate","m"],
-["Investing","Investimenti","Seguire il piano di investimento","m"],
-["Debt Management","Debiti","Monitorare debiti e rate","m"],
-["Emergency Fund","Fondo emergenze","Alimentare il fondo di sicurezza","m"],
-["Income Growth","Crescita entrate","Lavorare su nuove opportunità di reddito","w"],
-["Spending Control","Spese consapevoli","Valutare gli acquisti non essenziali","w"],
-["Planning","Pianificazione","Rivedere gli obiettivi finanziari","m"]]],
-["Spirit","Consapevolezza, valori, equilibrio e direzione","🧭",[
-["Self Awareness","Consapevolezza","Dedicare tempo all'introspezione","w"],
-["Meditation","Meditazione","Fare 5–10 minuti di meditazione","d"],
-["Gratitude","Gratitudine","Annotare 3 cose positive","d"],
-["Purpose","Scopo","Rileggere il proprio perché","w"],
-["Values","Valori","Verificare che le azioni siano coerenti con i valori","w"],
-["Mindfulness","Presenza","Fare una pausa consapevole","d"],
-["Emotional Regulation","Gestione emotiva","Riconoscere e gestire le emozioni","d"],
-["Nature","Natura","Trascorrere tempo all'aperto","w"]]]
+["Health","Corpo forte, sano, atletico e pieno di energia","🏋️"],
+["Work","Crescita professionale, autonomia e realizzazione","💼"],
+["Family","Relazioni familiari solide e rispettose","🏡"],
+["Friends","Amicizie profonde e autentiche","🤝"],
+["Romance","Relazione sentimentale sana e appagante","❤️"],
+["Sex","Sessualità consapevole e soddisfacente","🌿"],
+["Creativity","Creare, sperimentare e trasformare idee in realtà","🎨"],
+["Learning","Curiosità, conoscenza e apprendimento continuo","📚"],
+["Finances","Stabilità, patrimonio e libertà di scelta","💰"],
+["Spirit","Consapevolezza, valori, equilibrio e direzione","🧭"]
 ];
-const APP_VERSION="1.11.0";
+/* Frequenze delle abitudini predefinite delle prime versioni: servono solo a importare backup molto vecchi */
+const LEGACY_FREQ=[["w3","w2","d","w1","d","d","w1","m"],["d","d","w","d","w","w","w","w"],["w","w","d","w","m","w","d"],["w","m","m","m","w","w"],["w","w","w","w","w","d","w"],["m","w","w","w","w","w","m"],["d","w","w","w","w","w"],["d","w","w","w","w","w","w"],["w","m","m","m","m","w","w","m"],["w","d","d","w","w","d","d","w"]];
+const APP_VERSION="1.11.1";
 const RELEASES=[
+{v:"1.11.1",date:"20 novembre 2026",title:"Partenza pulita",sections:[
+["Miglioramenti",["Una nuova installazione parte senza abitudini precompilate: restano le 10 aree del Cerchio della Vita e le abitudini si creano con «＋ Abitudine».","Chi ha già dati non è toccato: abitudini, log e revisioni restano nel browser e nel repository di sincronizzazione. I backup molto vecchi si importano ancora con le frequenze corrette."]]]},
 {v:"1.11.0",date:"20 novembre 2026",title:"Sincronizzazione su repository GitHub privato",sections:[
 ["Novità",["Sincronizzazione opzionale dei dati su un file JSON in un repository GitHub privato (da Dati e backup): parte all'apertura e dopo le modifiche, e ogni salvataggio diventa un commit con storico.","Se sia questo dispositivo sia il repository hanno modifiche diverse, l'app propone di unire, tenere il repository o tenere questo dispositivo.","Se la sincronizzazione si ferma (errore o conflitto) compare un avviso in Oggi."]],
 ["Miglioramenti",["Il token GitHub resta solo su questo dispositivo, separato dai dati: non finisce mai nei backup esportati. Funziona anche offline: i dati locali restano la fonte principale e vengono inviati appena torna la rete.","Reset completo e importazione di un backup tengono conto della sincronizzazione (il reset la disattiva)."]]]},
@@ -285,8 +217,8 @@ const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const parseYmd=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
 const fmt=d=>d.toLocaleDateString("it-IT",{day:"numeric",month:"short"});
 function isoWeek(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());const start=new Date(d);start.setDate(d.getDate()-(d.getDay()+6)%7);const end=new Date(start);end.setDate(start.getDate()+6);const thu=new Date(start);thu.setDate(start.getDate()+3);const y=thu.getFullYear();const j4=new Date(y,0,4);const w1=new Date(j4);w1.setDate(j4.getDate()-(j4.getDay()+6)%7);const num=Math.round((start-w1)/604800000)+1;return{key:y+"-W"+pad(num),num,start,end}}
-const dcode=(i,j)=>{const c=(defaults[i]&&defaults[i][3][j]&&defaults[i][3][j][3])||"d";return{freq:c[0]==="w"?"weekly":c[0]==="m"?"monthly":"daily",target:+c.slice(1)||1}};
-const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:a[3].map((m,j)=>({id:i+"_"+j,name:m[0],label:m[1],habit:m[2],enabled:true,...dcode(i,j)}))})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
+const dcode=(i,j)=>{const c=(LEGACY_FREQ[i]&&LEGACY_FREQ[i][j])||"d";return{freq:c[0]==="w"?"weekly":c[0]==="m"?"monthly":"daily",target:+c.slice(1)||1}};
+const fresh=()=>({appVersion:APP_VERSION,areas:defaults.map((a,i)=>({id:i,name:a[0],description:a[1],icon:a[2],score:5,priority:false,micros:[]})),logs:{},plogs:{weeks:{},months:{}},reviews:{weeks:{},months:{}}});
 function firstLogOf(d,id){let best=ymd(new Date());const up=k=>{if(k<best)best=k};
  Object.keys(d.logs||{}).forEach(k=>{if(d.logs[k]&&d.logs[k][id])up(k)});
  Object.keys(d.plogs.weeks||{}).forEach(k=>{if(d.plogs.weeks[k][id]){const [y,w]=k.split("-W").map(Number),j=new Date(y,0,4),m=new Date(j);m.setDate(j.getDate()-(j.getDay()+6)%7+(w-1)*7);up(ymd(m))}});
