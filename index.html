@@ -3,57 +3,59 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#172b25">
+<meta name="theme-color" content="#000000">
+<script>(function(){try{var t=localStorage.getItem("lifeOS_theme")||"dark";if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})()</script>
 <title>Life OS – Cerchio della Vita</title>
 <style>
-:root{--bg:#f4f5f1;--card:#fff;--ink:#1d2924;--muted:#68756e;--line:#e2e7e1;--green:#315c49;--soft:#eaf1eb;--gold:#c18b42;--red:#a64c43}
+:root{--bg:#f4f5f1;--card:#fff;--card2:#fbfcfa;--field:#fff;--ink:#1d2924;--muted:#68756e;--line:#e2e7e1;--line2:#d8dfd9;--green:#315c49;--onacc:#fff;--soft:#eaf1eb;--gold:#c18b42;--red:#a64c43;--track:#edf0ec;--bar:#668c73;--hair:#0000000d}
+:root[data-theme=dark]{color-scheme:dark;--bg:#000;--card:#141417;--card2:#1a1a1f;--field:#1c1c21;--ink:#f3f3f6;--muted:#9b9ba6;--line:#26262c;--line2:#34343b;--green:#9fa0f8;--onacc:#0c0c1a;--soft:#23233b;--gold:#e3a652;--red:#f07a86;--track:#28282e;--bar:#8d8ef0;--hair:#ffffff14}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 header{background:#172b25;color:#fff;padding:26px 18px 22px}header .wrap,main{max-width:1050px;margin:auto}
 h1{font-size:27px;margin:0 0 5px;letter-spacing:-.5px}header p{margin:0;color:#d3ded7;max-width:700px}
-nav{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);background:#fff;z-index:30;transform:translateX(-103%);transition:transform .22s;display:flex;flex-direction:column;gap:4px;padding:14px 12px;overflow:auto;box-shadow:4px 0 24px #0003}
-nav button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:9px 13px;font-weight:600;white-space:nowrap}
-nav button.active,.btn.primary{background:var(--green);color:white;border-color:var(--green)}
+nav{position:fixed;top:0;left:0;bottom:0;width:min(300px,84vw);background:var(--card);z-index:30;transform:translateX(-103%);transition:transform .22s;display:flex;flex-direction:column;gap:4px;padding:14px 12px;overflow:auto;box-shadow:4px 0 24px #0003}
+nav button,.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px 13px;font-weight:600;white-space:nowrap}
+nav button.active,.btn.primary{background:var(--green);color:var(--onacc);border-color:var(--green)}
 main{padding:18px 15px 60px}.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px;margin:0 0 15px;box-shadow:0 2px 8px #172b2508}
 h2{font-size:20px;margin:0 0 5px}h3{font-size:16px;margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:13px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.area{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff;cursor:pointer;text-align:left;color:inherit;width:100%}
+.area{border:1px solid var(--line);border-radius:13px;padding:14px;background:var(--card);cursor:pointer;text-align:left;color:inherit;width:100%}
 .area:hover{border-color:#8da795}.area-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.area strong{font-size:15px}.score{font-weight:700;color:var(--green);font-variant-numeric:tabular-nums}
-.track{height:7px;border-radius:9px;background:#edf0ec;overflow:hidden;margin:10px 0 4px}.track span{display:block;height:100%;background:#668c73;border-radius:9px}
+.track{height:7px;border-radius:9px;background:var(--track);overflow:hidden;margin:10px 0 4px}.track span{display:block;height:100%;background:var(--bar);border-radius:9px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px}.stack{display:grid;gap:12px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-weight:600;font-size:13px}
-input,textarea,select{font:inherit;color:inherit;background:white;border:1px solid #d8dfd9;border-radius:9px;padding:10px;width:100%}input[type=range]{padding:0;accent-color:var(--green)}input[type=checkbox]{width:auto;accent-color:var(--green);transform:scale(1.15)}
+input,textarea,select{font:inherit;color:inherit;background:var(--field);border:1px solid var(--line2);border-radius:9px;padding:10px;width:100%}input[type=range]{padding:0;accent-color:var(--green)}input[type=checkbox]{width:auto;accent-color:var(--green);transform:scale(1.15)}
 textarea{min-height:80px;resize:vertical}.micro{border-top:1px solid var(--line);padding:13px 0}.micro:first-child{border-top:0}
 .habit{display:flex;align-items:flex-start;gap:9px;margin:8px 0}.habit label{flex:1}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.btn{cursor:pointer}.btn.danger{color:var(--red)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tabs button{border:0;background:var(--soft);border-radius:9px;padding:8px 11px;color:var(--green);font-weight:600}.tabs button.active{background:var(--green);color:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.tabs button{border:0;background:var(--soft);border-radius:9px;padding:8px 11px;color:var(--green);font-weight:600}.tabs button.active{background:var(--green);color:var(--onacc)}
 .kpi{font-size:28px;font-weight:750;color:var(--green)}.empty{padding:24px;text-align:center;color:var(--muted)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:10px}
 .hidden{display:none!important}
 @media(min-width:700px){main{padding-top:24px}.panel{padding:20px}}
 
-.ver{font-size:12px;font-weight:600;background:#ffffff22;border-radius:8px;padding:2px 8px;vertical-align:middle;margin-left:6px}
+.ver{font-size:12px;font-weight:600;background:var(--card)fff22;border-radius:8px;padding:2px 8px;vertical-align:middle;margin-left:6px}
 .grid2{display:grid;grid-template-columns:1fr 110px;gap:10px}
 .tag{font-size:11px;font-weight:600;background:var(--soft);color:var(--green);border-radius:7px;padding:2px 7px;margin-left:6px;white-space:nowrap}
-.stepper{display:flex;align-items:center;gap:6px;margin-top:1px}.stepper button{width:32px;height:32px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:18px;font-weight:700;color:var(--green);cursor:pointer}
+.stepper{display:flex;align-items:center;gap:6px;margin-top:1px}.stepper button{width:32px;height:32px;border:1px solid var(--line);background:var(--card);border-radius:8px;font-size:18px;font-weight:700;color:var(--green);cursor:pointer}
 .stepper span{min-width:38px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}.stepper span.ok{color:var(--green)}
 .rel{border-top:1px solid var(--line);padding:10px 0}.rel:first-child{border-top:0}.rel summary{cursor:pointer;font-weight:700}.rel h4{margin:12px 0 4px;font-size:13px;color:var(--green)}.rel ul{margin:0;padding-left:20px}
 .radarwrap{max-width:480px;margin:6px auto 0}.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:13px;margin-top:4px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
-.wks{display:flex;gap:4px;height:72px;margin:10px 0 4px}.wk{flex:1;display:flex;flex-direction:column}.wk b{flex:1;display:flex;align-items:flex-end;background:#edf0ec;border-radius:4px}
-.wk b span{width:100%;border-radius:4px;background:var(--gold)}.wk b span.ok{background:#668c73}.wk i{font-style:normal;font-size:9px;text-align:center;color:var(--muted)}
+.wks{display:flex;gap:4px;height:72px;margin:10px 0 4px}.wk{flex:1;display:flex;flex-direction:column}.wk b{flex:1;display:flex;align-items:flex-end;background:var(--track);border-radius:4px}
+.wk b span{width:100%;border-radius:4px;background:var(--gold)}.wk b span.ok{background:var(--bar)}.wk i{font-style:normal;font-size:9px;text-align:center;color:var(--muted)}
 nav.open{transform:none}nav button{text-align:left;width:100%;border:0;background:none;padding:12px 14px;font-size:15px}
 .navhead{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 12px;font-weight:700;font-size:17px}
 #scrim{position:fixed;inset:0;background:#0006;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}#scrim.show{opacity:1;pointer-events:auto}
-.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid var(--line);padding:8px 14px}
-.burger{border:1px solid var(--line);background:#fff;border-radius:10px;width:42px;height:42px;font-size:21px;cursor:pointer;color:var(--ink)}.vt{flex:1;font-weight:700;font-size:16px}.addbtn{padding:9px 12px}
-.sheet{position:fixed;inset:0;z-index:40;background:#0007;display:flex;align-items:flex-end;justify-content:center}.sheetcard{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px;max-height:92vh;overflow:auto}
-.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 11px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}.chip.on{background:var(--green);color:#fff;border-color:var(--green)}
-.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg button{flex:1;border:0;background:#fff;padding:10px;font-weight:600;cursor:pointer;color:var(--ink)}.seg button.on{background:var(--green);color:#fff}
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:10px;background:var(--card);border-bottom:1px solid var(--line);padding:8px 14px}
+.burger{border:1px solid var(--line);background:var(--card);border-radius:10px;width:42px;height:42px;font-size:21px;cursor:pointer;color:var(--ink)}.vt{flex:1;font-weight:700;font-size:16px}.addbtn{padding:9px 12px}
+.sheet{position:fixed;inset:0;z-index:40;background:#0007;display:flex;align-items:flex-end;justify-content:center}.sheetcard{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px;max-height:92vh;overflow:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:7px 11px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}.chip.on{background:var(--green);color:var(--onacc);border-color:var(--green)}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg button{flex:1;border:0;background:var(--card);padding:10px;font-weight:600;cursor:pointer;color:var(--ink)}.seg button.on{background:var(--green);color:var(--onacc)}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#172b25;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50}#toast.show{opacity:1;transform:translateX(-50%)}
-.stepper input.qin{width:70px;text-align:center;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:6px 4px;font-size:15px;background:#fff}.stepper input.qin.ok{color:var(--green);border-color:var(--green)}
+.stepper input.qin{width:70px;text-align:center;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:6px 4px;font-size:15px;background:var(--card)}.stepper input.qin.ok{color:var(--green);border-color:var(--green)}
 
 /* v1.12 – elenco aree compatto e allineamenti */
-.alist{margin-top:12px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}
-.aitem{border-top:1px solid var(--line)}.aitem:first-child{border-top:0}.aitem.open{background:#fbfcfa}
+.alist{margin-top:12px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--card)}
+.aitem{border-top:1px solid var(--line)}.aitem:first-child{border-top:0}.aitem.open{background:var(--card2)}
 .ahead{display:grid;grid-template-columns:30px minmax(0,1fr) 52px 16px;align-items:center;column-gap:8px;width:100%;border:0;background:none;color:inherit;text-align:left;padding:12px 12px;cursor:pointer;font:inherit}
 .ahead .aic{font-size:20px;text-align:center}.ahead .anm{display:grid;gap:1px;min-width:0}.ahead .anm strong{font-size:15px}.ahead .anm small{color:var(--muted);font-size:12px}
 .ahead .score{text-align:right}.ahead .chev{color:var(--muted);transition:transform .15s;text-align:center}.aitem.open .chev{transform:rotate(90deg)}
@@ -62,31 +64,43 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 .mrow .att{display:grid;justify-items:center;gap:2px;font-size:12px;color:var(--muted)}
 .mname{display:flex;flex-wrap:wrap;align-items:center;gap:4px 0}.mname .tag:first-of-type{margin-left:0}
 .navfoot{margin-top:auto;padding:14px 14px 4px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
-.hwrap{margin:0}.tips{margin:2px 0 10px 29px;padding:8px 12px;background:var(--soft);border-radius:10px}.tips .nc{padding:8px 0;border-top:1px solid #0000000d}.tips .nc:first-of-type{border-top:0}
+.hwrap{margin:0}.tips{margin:2px 0 10px 29px;padding:8px 12px;background:var(--soft);border-radius:10px}.tips .nc{padding:8px 0;border-top:1px solid var(--hair)}.tips .nc:first-of-type{border-top:0}
+
+/* v1.14 – tema, barra inferiore, schede, barra data */
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.panel{border-radius:18px}.topbar{background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:0;padding:10px 14px}
+.burger{border-radius:50%;width:44px;height:44px;background:var(--card)}.addbtn{border-radius:22px;padding:10px 16px}
+.seg{border-radius:999px;background:var(--card);padding:4px;gap:2px}.seg button{border-radius:999px;background:transparent;padding:9px 6px;font-size:14px}
+.ptabs{margin:0 0 14px;overflow-x:auto}.ptabs button{white-space:nowrap}
+.bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:2px;padding:6px;background:color-mix(in srgb,var(--card) 94%,transparent);border:1px solid var(--line);border-radius:32px;backdrop-filter:blur(14px);z-index:15;box-shadow:0 10px 30px #0005}
+.bnav button{display:grid;justify-items:center;gap:2px;border:0;background:none;color:var(--muted);font-size:11px;font-weight:600;padding:8px 12px;border-radius:26px;min-width:72px;cursor:pointer}.bnav button.active{background:var(--soft);color:var(--green)}.bnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#toast{bottom:104px}
+.datebar{display:flex;align-items:center;gap:8px;margin:0 0 14px}.datebar input{flex:1;text-align:center;font-weight:700;border-radius:22px;padding:11px}.dbtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}.dbtn:disabled{opacity:.35;cursor:default}
+.sheet{align-items:flex-end}
 </style>
 </head>
 <body>
-<div class="topbar"><button class="burger" id="burger" aria-label="Menu">☰</button><div class="vt" id="viewTitle">☀️ Oggi</div><button class="btn primary addbtn" id="topAdd">＋ Abitudine</button></div>
+<div class="topbar"><button class="burger" id="burger" aria-label="Menu">☰</button><div class="vt" id="viewTitle">Oggi</div><button class="btn primary addbtn" id="topAdd">＋ Abitudine</button></div>
 <div id="scrim"></div>
 <nav id="nav"><div class="navhead"><span>Life OS</span><div id="navClose" role="button" aria-label="Chiudi menu" style="cursor:pointer;padding:4px 8px">✕</div></div>
-<button class="active" data-view="today">☀️ Oggi</button>
-<button data-view="overview">🏠 Panoramica</button>
-<button data-view="areas">🗂️ Aree e abitudini</button>
-<button data-view="daily">✅ Tracker</button>
-<button data-view="arch">🗄️ Archiviate</button>
-<button data-view="sum">🗓️ Riepilogo</button>
-<button data-view="radar">🎯 Radar</button>
-<button data-view="cycle">🏁 12 Settimane</button>
-<button data-view="dash">📈 Dashboard</button>
-<button data-view="stats">📊 Statistiche</button>
-<button data-view="vac">🏖️ Vacanza</button>
-<button data-view="lib">📚 Libreria</button>
-<button data-view="reviews">📝 Revisioni</button>
-<button data-view="backup">💾 Dati e backup</button>
+<button class="active" data-view="today">Oggi</button>
+<button data-view="overview">Panoramica</button>
+<button data-view="areas">Aree e abitudini</button>
+<button data-view="trend">Andamento</button>
+<button data-view="cycle">12 Settimane</button>
+<button data-view="lib">Libreria</button>
+<button data-view="reviews">Revisioni</button>
+<button data-view="settings">Impostazioni</button>
 <div class="navfoot">Life OS · versione <strong class="appv"></strong></div>
 </nav>
+<div class="bnav" id="bnav">
+<button class="active" data-view="today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>Oggi</button>
+<button data-view="areas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Aree</button>
+<button data-view="trend"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20V12M12 20V5M18 20v-5"/></svg>Andamento</button>
+<button data-view="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>Impostazioni</button>
+</div>
 <main>
-<section id="today" class="view"><div id="todayBody"></div></section>
+<section id="today" class="view"><div class="datebar"><button class="dbtn" id="dPrev" aria-label="Giorno precedente">‹</button><input type="date" id="trackerDate"><button class="dbtn" id="dNext" aria-label="Giorno successivo">›</button><button class="btn hidden" id="todayBtn">Oggi</button></div><div id="todayBody"></div></section>
 <section id="overview" class="view hidden">
 <div class="panel">
 <div class="row"><div><h2>Il tuo Cerchio della Vita</h2><div class="muted small">Valuta la tua soddisfazione attuale, non il tuo valore personale.</div></div><div><div class="kpi" id="overall">—</div><div class="small muted">media / 10</div></div></div>
@@ -100,26 +114,28 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 </div>
 </section>
 <section id="areas" class="view hidden">
+<div class="seg ptabs" data-tabs="areas"></div>
+<div id="areasList" class="sub">
 <div class="panel"><h2>Aree e abitudini</h2><p class="muted small">Tocca un'area per vedere e gestire le sue abitudini.</p>
 <div class="alist" id="areaPicker"></div></div>
+</div>
+<div id="arch" class="sub hidden"><div id="archBody"></div></div>
+<div id="vac" class="sub hidden"><div id="vacBody"></div></div>
 </section>
-<section id="arch" class="view hidden"><div id="archBody"></div></section>
-<section id="daily" class="view hidden">
-<div class="panel"><h2>Tracker</h2><p class="muted small">Abitudini giornaliere, settimanali e mensili. Le settimanali e le mensili si completano nel loro periodo (settimana lun–dom, mese di calendario) in base alla data scelta.</p>
-<div class="field"><label for="trackerDate">Data</label><div class="row"><input type="date" id="trackerDate"><button class="btn" id="todayBtn">Oggi</button></div></div></div>
-<div id="trackerBody"></div></section>
-<section id="radar" class="view hidden">
+<section id="trend" class="view hidden">
+<div class="seg ptabs" data-tabs="trend"></div>
+<div id="radar" class="sub hidden">
 <div class="panel"><h2>Radar del Cerchio della Vita</h2><p class="muted small">Confronta i punteggi di due mesi. Lo storico si aggiorna quando salvi un'area o la revisione mensile.</p>
 <div class="cmp"><div class="field"><label>Confronta con</label><select id="cmpA"></select></div><div class="field"><label>Mese</label><select id="cmpB"></select></div></div>
 <div class="radarwrap" id="radarCmp"></div><div class="legend" id="radarLegend"></div></div>
 <div class="panel"><h3>Variazioni</h3><div id="radarDelta"></div></div>
+</div>
+<div id="dash" class="sub hidden"><div id="dashBody"></div></div>
+<div id="stats" class="sub hidden"><div id="statsBody"></div></div>
+<div id="sum" class="sub hidden"><div id="sumBody"></div></div>
 </section>
 <section id="cycle" class="view hidden"><div id="cycleBody"></div></section>
-<section id="dash" class="view hidden"><div id="dashBody"></div></section>
-<section id="stats" class="view hidden"><div id="statsBody"></div></section>
 <section id="lib" class="view hidden"><div id="libBody"></div></section>
-<section id="sum" class="view hidden"><div id="sumBody"></div></section>
-<section id="vac" class="view hidden"><div id="vacBody"></div></section>
 <section id="reviews" class="view hidden">
 <div class="panel"><h2>Revisione settimanale</h2><p class="muted small">Dedica 10–15 minuti a capire cosa ha funzionato e cosa correggere.</p>
 <div class="field"><label>Settimana che si conclude il</label><input type="date" id="weekDate"></div>
@@ -139,7 +155,8 @@ nav.open{transform:none}nav button{text-align:left;width:100%;border:0;backgroun
 </div>
 <div class="panel"><h3>Storico revisioni</h3><div id="reviewHistory" class="muted small">Ancora nessuna revisione salvata.</div></div>
 </section>
-<section id="backup" class="view hidden">
+<section id="settings" class="view hidden">
+<div class="panel"><h2>Aspetto</h2><div class="field"><label for="themeSel">Tema</label><select id="themeSel"><option value="dark">Scuro</option><option value="light">Chiaro</option><option value="auto">Automatico (segue il dispositivo)</option></select></div></div>
 <div class="panel"><h2>Dati e backup</h2><p>Le modifiche vengono salvate automaticamente nella memoria locale del browser su questo dispositivo. Esporta periodicamente un backup JSON per non perdere i dati.</p>
 <div class="actions"><button class="btn primary" id="export">Esporta backup JSON</button><label class="btn" for="importFile">Importa backup JSON</label><input class="hidden" type="file" id="importFile" accept="application/json"></div>
 <p class="muted small" id="backupStatus">Nessun backup importato in questa sessione.</p>
@@ -180,15 +197,16 @@ const defaults = [
 ];
 /* Frequenze delle abitudini predefinite delle prime versioni: servono solo a importare backup molto vecchi */
 const LEGACY_FREQ=[["w3","w2","d","w1","d","d","w1","m"],["d","d","w","d","w","w","w","w"],["w","w","d","w","m","w","d"],["w","m","m","m","w","w"],["w","w","w","w","w","d","w"],["m","w","w","w","w","w","m"],["d","w","w","w","w","w"],["d","w","w","w","w","w","w"],["w","m","m","m","m","w","w","m"],["w","d","d","w","w","d","d","w"]];
-const APP_VERSION="1.13.0";
+const APP_VERSION="1.14.0";
 const RELEASES=[
+{v:"1.14.0",date:"22 novembre 2026",title:"Nuova struttura e tema scuro",items:["Tema scuro (predefinito), chiaro o automatico, da Impostazioni.","Barra di navigazione in basso: Home, Andamento, Impostazioni.","Andamento: Radar, Dashboard, Statistiche e Settimana in schede.","Oggi e Tracker uniti: frecce per cambiare giorno e tasto Oggi.","Vacanza e Archiviate dentro Aree e abitudini.","Nuova sezione Impostazioni (tema, backup, sincronizzazione, dati).","Emoji non necessarie rimosse (restano icone delle aree e 💡)."]},
 {v:"1.13.0",date:"22 novembre 2026",title:"Promemoria backup e archiviazione protetta",items:["Avviso in Oggi se l'ultimo backup ha più di 7/14/30 giorni (o non c'è); una sincronizzazione recente conta come backup.", "Dati e backup: data dell'ultimo backup e scelta del promemoria.", "Richiesta di archiviazione persistente al browser, con stato visibile."]},
 {v:"1.12.0",date:"21 novembre 2026",title:"Aree compatte, archivio e consigli per abitudine",items:["Aree e abitudini: elenco compatto, tocchi un'area e vedi subito le sue abitudini (valutazione sotto).", "Righe, punteggi e interruttori «Attiva» allineati su una griglia fissa.", "Nuova sezione «Archiviate»: ripristina o elimina definitivamente (con i dati registrati).", "Consigli della libreria collegabili a un'abitudine: in Oggi e Tracker il tocco su 💡 li mostra; compaiono anche nel riepilogo per le abitudini andate male.", "Dati e backup: «Azzera tutte le abitudini» e «Azzera tutti i dati», con conferma scritta (AZZERA).", "Versione in fondo al menu; note di rilascio più sintetiche."]},
 {v:"1.11.1",date:"20 novembre 2026",title:"Partenza pulita",items:["Le nuove installazioni partono senza abitudini precompilate (restano le 10 aree).", "Dati esistenti non toccati; backup molto vecchi importati con le frequenze giuste."]},
 {v:"1.11.0",date:"20 novembre 2026",title:"Sincronizzazione su repository GitHub privato",items:["Sincronizzazione opzionale su un file JSON di un repo privato: all'apertura e dopo ogni modifica, un commit per salvataggio.", "Conflitti: unisci, tieni il repository o tieni questo dispositivo.", "Token solo sul dispositivo e mai nei backup; avviso in Oggi se la sincronizzazione si ferma."]},
 {v:"1.10.0",date:"19 novembre 2026",title:"Riepilogo, revisioni collegate, libreria",items:["Riepilogo settimanale: abitudini andate bene/male, aree, obiettivi in ritardo e consigli (regole locali, non IA); avviso in Oggi.", "Libreria di consigli e appunti con fonte, filtri e «Già applicato» (non sono abitudini).", "Revisioni settimanale e mensile precompilate con i dati; scrivi solo le riflessioni.", "12 Week Year: indicatore di risultato per obiettivo e revisione alla settimana 13.", "Punteggi delle aree in autosave, con nota «perché?» mostrata nel confronto del radar."]},
 {v:"1.9.0",date:"19 novembre 2026",title:"Modalità vacanza e unità di misura",items:["Vacanza: periodo con fine facoltativa; salta tutte le abitudini o quelle scelte, per area o una per una.", "Unità di misura: abitudini a quantità (es. 4 L) con obiettivo e passo; il parziale conta in proporzione nelle %."]},
-{v:"1.8.0",date:"19 novembre 2026",title:"Abitudini da eliminare, serie e salto",items:["Abitudini da eliminare: la spunta vale «evitata».", "Serie di giorni/settimane/mesi consecutivi (🔥).", "Salto di un giorno/settimana/mese senza penalizzare le percentuali."]},
+{v:"1.8.0",date:"19 novembre 2026",title:"Abitudini da eliminare, serie e salto",items:["Abitudini da eliminare: la spunta vale «evitata».", "Serie di giorni/settimane/mesi consecutivi.", "Salto di un giorno/settimana/mese senza penalizzare le percentuali."]},
 {v:"1.7.0",date:"19 novembre 2026",title:"Statistiche cronologiche",items:["Statistiche per abitudine su 7 giorni, 1, 6 e 12 mesi con tracciato a barre e media totale, per giornaliere, settimanali e mensili."]},
 {v:"1.6.0",date:"19 novembre 2026",title:"Data di inizio e archiviazione",items:["Data di inizio per ogni abitudine e «Riparti da oggi».", "Archiviazione al posto di «Elimina»: i log restano; le % contano solo i periodi in cui l'abitudine era attiva."]},
 {v:"1.5.0",date:"19 novembre 2026",title:"Home «Oggi»",items:["Home «Oggi» con solo ciò che resta da fare (giornaliere e settimanali/mensili sotto obiettivo); header rimosso."]},
@@ -274,11 +292,11 @@ function sResolve(how){const rm=sSt.conflict;if(!rm)return;
 const sTime=t=>t?new Date(t).toLocaleString("it-IT",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"mai";
 function renderSync(){const b=document.getElementById("syncBox");if(!b)return;
  if(!sOn()){b.innerHTML=`<p class="muted small">Copia i dati in un file JSON di un repository GitHub <strong>privato e dedicato ai dati</strong> (non il repository del codice). Ogni salvataggio diventa un commit: hai anche lo storico.</p><ol class="small muted"><li>Crea un repository privato (con un README iniziale).</li><li>GitHub → Settings → Developer settings → Fine-grained tokens: accesso a <em>solo quel repository</em>, permesso <em>Contents: Read and write</em>, scadenza a tua scelta.</li><li>Inserisci i dati qui sotto. Il token resta solo su questo dispositivo e non finisce mai nei backup esportati.</li></ol><div class="field"><label>Repository (proprietario/nome)</label><input id="syRepo" autocomplete="off" placeholder="tuonome/life-os-dati" value="${esc(sm.repo||"")}"></div><div class="field"><label>Nome del file</label><input id="syPath" autocomplete="off" value="${esc(sm.path||"lifeos-data.json")}"></div><div class="field"><label>Token</label><input id="syTok" type="password" autocomplete="off" placeholder="github_pat_…"></div><button class="btn primary" data-sy="on">Attiva e sincronizza</button>${sSt.msg?`<p class="small" style="color:var(--red)">${esc(sSt.msg)}</p>`:""}`;return}
- const S=sSt,lab=S.state==="busy"?"⏳ Sincronizzazione in corso…":S.state==="ok"||S.state==="idle"?(sm.dirty?"🕓 Modifiche in attesa di sincronizzazione":"✅ Sincronizzato"):S.state==="conflict"?"🔀 Conflitto: serve una tua scelta":"⚠️ "+esc(S.msg);
+ const S=sSt,lab=S.state==="busy"?"Sincronizzazione in corso…":S.state==="ok"||S.state==="idle"?(sm.dirty?"Modifiche in attesa di sincronizzazione":"Sincronizzato"):S.state==="conflict"?"Conflitto: serve una tua scelta":"Errore: "+esc(S.msg);
  let h=`<div class="row"><strong>${lab}</strong></div><div class="small muted">${esc(sm.repo)} · ${esc(sm.path||"lifeos-data.json")} · ultima sincronizzazione: ${sTime(sm.lastAt)}</div>`;
  if(S.state==="conflict"&&S.conflict)h+=`<div class="panel" style="background:var(--soft);margin-top:10px"><p class="small">Questo dispositivo e il repository hanno modifiche diverse.<br>Qui: ${sTime(data.updatedAt)} · Repository: ${sTime(S.conflict.data.updatedAt)}</p><div class="actions"><button class="btn primary" data-sy="merge">Unisci</button><button class="btn" data-sy="remote">Tieni il repository</button><button class="btn" data-sy="local">Tieni questo dispositivo</button></div><p class="small muted"><strong>Unisci</strong> aggiunge i dati mancanti da entrambe le parti (registrazioni, revisioni, note…); se lo stesso valore è diverso vince la versione modificata per ultima. Un elemento eliminato su una parte può ricomparire. Le altre due scelte sovrascrivono l'altra parte.</p></div>`;
  h+=`<div class="actions"><button class="btn" data-sy="now" ${S.state==="busy"?"disabled":""}>Sincronizza ora</button><button class="btn danger" data-sy="off">Disattiva e rimuovi il token</button></div>`;b.innerHTML=h}
-function syncBanner(){if(!sOn()||(sSt.state!=="error"&&sSt.state!=="conflict"))return"";return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>${sSt.state==="conflict"?"🔀 Sincronizzazione: conflitto da risolvere":"⚠️ Sincronizzazione ferma"}</strong><div class="small muted">${sSt.state==="conflict"?"Scegli come procedere.":esc(sSt.msg)}</div></div><button class="btn small primary" data-syopen="1">Apri</button></div></div>`}
+function syncBanner(){if(!sOn()||(sSt.state!=="error"&&sSt.state!=="conflict"))return"";return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>${sSt.state==="conflict"?"Sincronizzazione: conflitto da risolvere":"Sincronizzazione ferma"}</strong><div class="small muted">${sSt.state==="conflict"?"Scegli come procedere.":esc(sSt.msg)}</div></div><button class="btn small primary" data-syopen="1">Apri</button></div></div>`}
 function syncReset(){sm={};try{localStorage.removeItem(SK);localStorage.removeItem(TK)}catch(e){}}
 document.addEventListener("click",e=>{const b=e.target.closest("#bkBox [data-bk=persist]");if(b)askPersist()});
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-sy]");if(!b||!b.closest("#syncBox"))return;const a=b.dataset.sy;
@@ -340,7 +358,7 @@ function streakOf(m,full){
  let run=0,best=0;
  for(let i=seq.length-1;i>=0;i--){const st=seq[i];if(st==="done"){run++;if(run>best)best=run}else if(st==="skip"){}else if(i>0)run=0}
  return{cur,best}}
-function doSkip(btn,dateStr){const f=btn.dataset.f,on=btn.hasAttribute("data-skip"),id=btn.dataset.skip||btn.dataset.unskip;setSkip(f,periods(dateStr)[f].k,id,on);save();renderAll();toast(on?"Saltata ⏭":"Salto annullato")}
+function doSkip(btn,dateStr){const f=btn.dataset.f,on=btn.hasAttribute("data-skip"),id=btn.dataset.skip||btn.dataset.unskip;setSkip(f,periods(dateStr)[f].k,id,on);save();renderAll();toast(on?"Saltata":"Salto annullato")}
 function stats(s){const P=periods(s),r={};Object.keys(FR).forEach(f=>{const all=items(s).filter(x=>x.m.freq===f),it=all.filter(x=>!sk(f,P[f].k,x.m.id));r[f]={total:it.length,done:it.filter(x=>count(f,P[f].k,x.m.id)>=tgt(f,x.m)).length,prog:it.reduce((t,x)=>t+prog(f,x.m,count(f,P[f].k,x.m.id)),0),skipped:all.length-it.length}});return{P,r}}
 function renderOverview(){
  $("overall").textContent=(data.areas.reduce((s,a)=>s+Number(a.score),0)/data.areas.length).toFixed(1);
@@ -355,19 +373,19 @@ function renderAreaPicker(){
   return `<div class="aitem ${open?"open":""}"><button class="ahead" data-pick="${a.id}" aria-expanded="${open}"><span class="aic">${a.icon}</span><span class="anm"><strong>${esc(a.name)}</strong><small>${n} ${n===1?"abitudine attiva":"abitudini attive"}${a.priority?" · ★ priorità":""}</small></span><span class="score">${a.score}/10</span><span class="chev">›</span></button>${open?'<div class="abody" id="areaDetail"></div>':""}</div>`}).join("");
  $("areaPicker").querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{const id=+b.dataset.pick;selected=selected===id?-1:id;renderAreaPicker();if(selected>=0){const h=q(`[data-pick="${id}"]`);h&&h.scrollIntoView&&h.scrollIntoView({block:"start"})}});
  if(selected>=0)renderDetail()}
-const tagOf=m=>(m.kind==="quit"?"🚫 Da eliminare · ":"")+(m.unit?FR[m.freq]+" · "+fmtN(m.goal)+" "+m.unit:(m.freq==="daily"?"Giornaliera":(FR[m.freq]+(m.target>1?" · "+m.target+"×":""))));
+const tagOf=m=>(m.kind==="quit"?"Da eliminare · ":"")+(m.unit?FR[m.freq]+" · "+fmtN(m.goal)+" "+m.unit:(m.freq==="daily"?"Giornaliera":(FR[m.freq]+(m.target>1?" · "+m.target+"×":""))));
 function applyMicros(a){a.micros.forEach((m,i)=>{if(!q(`[data-label="${i}"]`))return;const sv=q(`[data-start="${i}"]`);if(sv&&sv.value&&m.spans&&m.spans.length)m.spans[m.spans.length-1].from=sv.value;m.label=q(`[data-label="${i}"]`).value;m.habit=q(`[data-habit="${i}"]`).value;m.enabled=q(`[data-enabled="${i}"]`).checked;const ks=q(`[data-kind="${i}"]`);if(ks)m.kind=ks.value;const me=q(`[data-meas="${i}"]`);if(me){if(me.value==="qty"&&m.kind!=="quit"){m.unit=(q(`[data-unit="${i}"]`).value.trim()||"unità").slice(0,12);m.goal=r3(parseFloat(String(q(`[data-goal="${i}"]`).value).replace(",",".")));if(!(m.goal>0))m.goal=1;const spv=r3(parseFloat(String(q(`[data-qstep="${i}"]`).value).replace(",",".")));m.step=spv>0?spv:niceStep(m.goal)}else m.unit=""}m.freq=q(`[data-freq="${i}"]`).value;m.target=m.freq==="daily"?1:Math.max(1,Math.min(99,parseInt(q(`[data-target="${i}"]`).value)||1))})}
 function renderDetail(){
  const a=data.areas[selected];if(!a||!$("areaDetail"))return;
  const nA=a.micros.filter(m=>m.archived).length,act=a.micros.filter(m=>!m.archived).length,notes=data.notes.filter(n=>n.areaId===a.id);
  $("areaDetail").innerHTML=`<div id="microList">${a.micros.map((m,i)=>m.archived?"":`<div class="micro" data-idx="${i}"><div class="mrow"><div><div class="mname"><strong>${esc(m.habit||m.label)}</strong><span class="tag">${tagOf(m)}</span></div><div class="small muted">${esc(m.label)}</div></div><label class="att"><input type="checkbox" data-enabled="${i}" ${m.enabled?"checked":""}><span>Attiva</span></label></div><details><summary class="small" style="cursor:pointer;color:var(--green);font-weight:600;margin-top:4px">Modifica</summary><div class="small muted since" style="margin-top:6px">${sinceTxt(m)}</div><div class="field"><label>Microcategoria</label><input data-label="${i}" value="${esc(m.label)}"></div><div class="field"><label>Abitudine / azione concreta</label><input data-habit="${i}" value="${esc(m.habit)}"></div><div class="field"><label>Tipo</label><select data-kind="${i}"><option value="build" ${m.kind!=="quit"?"selected":""}>Da costruire</option><option value="quit" ${m.kind==="quit"?"selected":""}>Da eliminare (la spunta vale «evitata»)</option></select></div><div class="field"><label>Misura</label><select data-meas="${i}"><option value="count" ${!m.unit?"selected":""}>Sì/No o conteggio</option><option value="qty" ${m.unit?"selected":""}>Quantità con unità</option></select></div><div class="qtybox ${m.unit&&m.kind!=="quit"?"":"hidden"}"><div class="field"><label>Unità di misura</label><input data-unit="${i}" value="${esc(m.unit)}" maxlength="12" placeholder="Es. L, min, pagine"></div><div class="grid2"><div class="field" style="margin:0"><label>Obiettivo per periodo</label><input type="text" inputmode="decimal" autocomplete="off" data-goal="${i}" value="${dec(m.goal)}"></div><div class="field" style="margin:0"><label>Passo +/−</label><input type="text" inputmode="decimal" autocomplete="off" data-qstep="${i}" value="${dec(m.step)}"></div></div></div><div class="grid2"><div class="field" style="margin:0"><label>Frequenza</label><select data-freq="${i}">${Object.keys(FR).map(f=>`<option value="${f}" ${m.freq===f?"selected":""}>${FR[f]}</option>`).join("")}</select></div><div class="field cntf ${m.unit?"hidden":""}" style="margin:0"><label>Volte / periodo</label><input type="number" min="1" max="99" data-target="${i}" value="${m.target}" ${m.freq==="daily"?"disabled":""}></div></div><div class="field"><label>Inizio abitudine</label><input type="date" data-start="${i}" value="${curFrom(m)}"></div><div class="actions"><button class="btn small" data-reset="${i}">Riparti da oggi</button><button class="btn danger small" data-archive="${i}">Archivia</button></div></details></div>`).join("")}</div>${act?"":'<div class="small muted" style="padding:12px 0">Nessuna abitudine in quest\'area.</div>'}
- <div class="actions"><button class="btn primary" id="addMicro">+ Aggiungi abitudine</button>${nA?`<button class="btn" id="goArch">🗄️ Archiviate (${nA})</button>`:""}</div>
+ <div class="actions"><button class="btn primary" id="addMicro">+ Aggiungi abitudine</button>${nA?`<button class="btn" id="goArch">Archiviate (${nA})</button>`:""}</div>
  <h3>Valutazione dell'area</h3>
  <div class="field"><label>Soddisfazione attuale: <span id="scoreVal">${a.score}</span>/10</label><input id="score" type="range" min="1" max="10" value="${a.score}"></div>
  <div class="field"><label>Perché questo punteggio? <span class="small muted">(nota breve, appare nel confronto mensile)</span></label><input id="scoreNote" maxlength="140" value="${esc(a.note||"")}" placeholder="es. 6: sonno irregolare, ma ho ripreso a camminare"></div>
  <div class="field"><label>Descrizione / direzione desiderata</label><input id="desc" value="${esc(a.description)}"></div>
  <div class="field"><label><input type="checkbox" id="priority" ${a.priority?"checked":""}> Includi tra le priorità del ciclo di 12 settimane</label><span class="small muted">Massimo 3 aree prioritarie. <span id="autoSaved">Le modifiche si salvano da sole.</span></span></div>
- <h3>📚 Consigli e appunti</h3>${notes.map(n=>noteCard(n,1)).join("")||'<div class="small muted">Nessun appunto per quest\'area.</div>'}<div class="actions"><button class="btn" id="addNote">+ Aggiungi consiglio</button></div>`;
+ <h3>Consigli e appunti</h3>${notes.map(n=>noteCard(n,1)).join("")||'<div class="small muted">Nessun appunto per quest\'area.</div>'}<div class="actions"><button class="btn" id="addNote">+ Aggiungi consiglio</button></div>`;
  const flash=()=>{const e=$("autoSaved");if(e)e.textContent="Salvato ✓"};
  const saveScore=()=>{a.description=$("desc").value;a.score=+$("score").value;a.note=$("scoreNote").value.trim();snap();const ym=ymd(new Date()).slice(0,7);(data.snapNotes[ym]=data.snapNotes[ym]||{})[a.id]=a.note;save();flash();const sc=q(`[data-pick="${a.id}"] .score`);if(sc)sc.textContent=a.score+"/10";renderOverview();renderRadar();renderDash()};
  $("score").oninput=e=>$("scoreVal").textContent=e.target.value;
@@ -383,27 +401,23 @@ function renderDetail(){
  $("areaDetail").querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{if(confirm("Ripartire da oggi? I dati registrati restano salvati, ma le statistiche di questa abitudine ripartono da oggi."))mod(+b.dataset.reset,m=>{applyMicros(a);m.spans=[{from:ymd(new Date()),to:null}]})});
 }
 function habitRow(f,k,x,o){o=o||{};const m=x.m,c=count(f,k,m.id),t=tgt(f,m),id=esc(m.id),quit=m.kind==="quit",qty=!!m.unit;
- const ctl=o.skipped?`<span style="width:20px;text-align:center">${o.vac?"🏖️":"⏭"}</span>`:qty?"":t===1?`<input type="checkbox" data-chk="${id}" data-f="${f}" ${c>=1?"checked":""}>`:`<div class="stepper"><button data-step="-1" data-id="${id}" data-f="${f}">−</button><span class="${c>=t?"ok":""}">${c}/${t}</span><button data-step="1" data-id="${id}" data-f="${f}">+</button></div>`;
+ const ctl=o.skipped?`<span class="small muted" style="min-width:34px;text-align:center">${o.vac?"Vacanza":"Saltata"}</span>`:qty?"":t===1?`<input type="checkbox" data-chk="${id}" data-f="${f}" ${c>=1?"checked":""}>`:`<div class="stepper"><button data-step="-1" data-id="${id}" data-f="${f}">−</button><span class="${c>=t?"ok":""}">${c}/${t}</span><button data-step="1" data-id="${id}" data-f="${f}">+</button></div>`;
  const n=o.skipped?0:streakOf(m,false).cur;
- const badge=n>=2?`<span class="tag" title="${n} ${STU[f][1]} di fila">🔥 ${n} ${STU[f][0]}</span>`:"";
- const btn=o.skipped?(o.vac?"":`<button class="btn small" data-unskip="${id}" data-f="${f}" title="Annulla il salto">↩ Annulla</button>`):(o.skip&&c<t?`<button class="btn small" data-skip="${id}" data-f="${f}" title="${SKT[f]}">⏭ Salta</button>`:"");
+ const badge=n>=2?`<span class="tag" title="${n} ${STU[f][1]} di fila">Serie ${n} ${STU[f][0]}</span>`:"";
+ const btn=o.skipped?(o.vac?"":`<button class="btn small" data-unskip="${id}" data-f="${f}" title="Annulla il salto">↩ Annulla</button>`):(o.skip&&c<t?`<button class="btn small" data-skip="${id}" data-f="${f}" title="${SKT[f]}">Salta</button>`:"");
  const hint=o.skipped?(o.vac?" · in vacanza":" · saltata"):quit?(t===1?" · spunta se l'hai evitata":" · conta i giorni in cui la eviti"):"";
  const box=qty&&!o.skipped?`<div class="stepper" style="margin-top:6px"><button data-step="${-m.step}" data-id="${id}" data-f="${f}">−</button><input class="qin ${c>=t?"ok":""}" type="text" inputmode="decimal" autocomplete="off" data-qty="${id}" data-f="${f}" value="${dec(c)}" placeholder="0"><button data-step="${m.step}" data-id="${id}" data-f="${f}">+</button><div class="small muted" style="margin-left:4px">/ ${fmtN(m.goal)} ${esc(m.unit)} · ${Math.round(Math.min(1,c/m.goal)*100)}%</div></div>`:"";
  const hn=data.notes.filter(n=>n.habitId===m.id),an=data.notes.filter(n=>!n.habitId&&n.areaId===x.a.id),nt=o.skipped?0:hn.length+an.length;
  const panel=tipsOpen[m.id]&&nt?`<div class="tips"><div class="small"><strong>💡 Consigli per «${esc(m.habit)}»</strong></div>${hn.map(n=>noteCard(n,2)).join("")}${an.length?`<div class="small muted" style="margin-top:6px">Dall'area ${esc(x.a.name)}</div>${an.map(n=>noteCard(n,2)).join("")}`:""}<div class="actions" style="margin-top:6px"><button class="btn small" data-tipadd="${id}">+ Aggiungi consiglio</button></div></div>`:"";
- const body=`<strong ${nt?`data-tips="${id}" style="cursor:pointer"`:""}>${esc(m.habit)}</strong>${nt?`<span class="tag" data-tips="${id}" style="cursor:pointer">💡 ${nt}</span>`:""}${quit?'<span class="tag">🚫 Da eliminare</span>':""}${badge}<div class="small muted">${esc(x.a.name)}${hint}</div>${box}`;
+ const body=`<strong ${nt?`data-tips="${id}" style="cursor:pointer"`:""}>${esc(m.habit)}</strong>${nt?`<span class="tag" data-tips="${id}" style="cursor:pointer">💡 ${nt}</span>`:""}${quit?'<span class="tag">Da eliminare</span>':""}${badge}<div class="small muted">${esc(x.a.name)}${hint}</div>${box}`;
  return `<div class="hwrap"><div class="habit">${ctl}${qty?`<div style="flex:1">${body}</div>`:`<label>${body}</label>`}${btn}</div>${panel}</div>`}
-function renderTracker(){const {P,r}=stats(ds());
- $("trackerBody").innerHTML=Object.keys(FR).map(f=>{const it=items(ds()).filter(x=>x.m.freq===f),s=r[f],pct=s.total?Math.round(s.prog/s.total*100):0;
-  return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${esc(P[f].label)}</div></div><div style="display:flex;align-items:center;gap:10px"><strong>${pct}%</strong><button class="btn" data-add="${f}" style="padding:5px 11px" aria-label="Aggiungi abitudine">＋</button></div></div><div class="track"><span style="width:${pct}%"></span></div><div class="small muted" style="margin-bottom:6px">${s.done} di ${s.total} completate${s.skipped?" · "+s.skipped+" saltate":""}</div>${it.map(x=>habitRow(f,P[f].k,x,skO(f,P[f].k,x.m.id))).join("")||'<div class="empty">Nessuna abitudine '+FR[f].toLowerCase()+' attiva.</div>'}</div>`}).join("")}
-$("trackerBody").onclick=e=>{const sb=e.target.closest("[data-skip],[data-unskip]");if(sb){doSkip(sb,ds());return}const ad=e.target.closest("[data-add]");if(ad){openSheet({freq:ad.dataset.add});return}const b=e.target.closest("[data-step]");if(!b)return;bump(b.dataset.f,periods(ds())[b.dataset.f].k,b.dataset.id,parseFloat(b.dataset.step));save();renderTracker();renderToday();renderOverview()};
-$("trackerBody").onchange=e=>{const qi=e.target.closest("[data-qty]");if(qi){setQty(qi,ds());save();renderTracker();renderToday();renderOverview();return}const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderTracker();renderToday();renderOverview()};
+function renderTracker(){}
 
 /* ===== Libreria: consigli e appunti (non sono abitudini) ===== */
-const NTYPES={video:"🎬 Video",libro:"📖 Libro",articolo:"📰 Articolo",podcast:"🎧 Podcast",altro:"💡 Altro"};
+const NTYPES={video:"Video",libro:"Libro",articolo:"Articolo",podcast:"Podcast",altro:"Altro"};
 let nf=null,lf={area:"",type:"",applied:"",q:""};
-const noteSrc=n=>{const s=[NTYPES[n.type]?NTYPES[n.type].slice(3):"",n.title,n.author&&("di "+n.author),n.ref].filter(Boolean).map(esc).join(" · ");return n.url&&/^https?:\/\//i.test(n.url)?`<a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">${s||"link"}</a>`:s};
-const noteCard=(n,mode)=>{const a=data.areas.find(x=>x.id===n.areaId),h=n.habitId?findMicro(n.habitId):null;return `<div class="nc" style="padding:10px 0;border-top:1px solid var(--line)"><div>${esc(n.text)}</div><div class="small muted" style="margin-top:3px">${noteSrc(n)||"<i>nessuna fonte</i>"}${a&&mode!==2?` · <span class="tag">${a.icon} ${esc(a.name)}</span>`:""}${h&&mode!==2?` · <span class="tag">🔗 ${esc(h.m.habit||h.m.label)}</span>`:""}</div>${mode===1?"":mode===2?`<div class="small" style="margin-top:4px"><label><input type="checkbox" data-napp="${n.id}" ${n.applied?"checked":""}> Già applicato</label></div>`:`<div class="row small" style="margin-top:6px"><label><input type="checkbox" data-napp="${n.id}" ${n.applied?"checked":""}> Già applicato</label><span><button class="btn small" data-nedit="${n.id}">Modifica</button> <button class="btn small danger" data-ndel="${n.id}">Elimina</button></span></div>`}</div>`};
+const noteSrc=n=>{const s=[NTYPES[n.type]||"",n.title,n.author&&("di "+n.author),n.ref].filter(Boolean).map(esc).join(" · ");return n.url&&/^https?:\/\//i.test(n.url)?`<a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">${s||"link"}</a>`:s};
+const noteCard=(n,mode)=>{const a=data.areas.find(x=>x.id===n.areaId),h=n.habitId?findMicro(n.habitId):null;return `<div class="nc" style="padding:10px 0;border-top:1px solid var(--line)"><div>${esc(n.text)}</div><div class="small muted" style="margin-top:3px">${noteSrc(n)||"<i>nessuna fonte</i>"}${a&&mode!==2?` · <span class="tag">${a.icon} ${esc(a.name)}</span>`:""}${h&&mode!==2?` · <span class="tag">${esc(h.m.habit||h.m.label)}</span>`:""}</div>${mode===1?"":mode===2?`<div class="small" style="margin-top:4px"><label><input type="checkbox" data-napp="${n.id}" ${n.applied?"checked":""}> Già applicato</label></div>`:`<div class="row small" style="margin-top:6px"><label><input type="checkbox" data-napp="${n.id}" ${n.applied?"checked":""}> Già applicato</label><span><button class="btn small" data-nedit="${n.id}">Modifica</button> <button class="btn small danger" data-ndel="${n.id}">Elimina</button></span></div>`}</div>`};
 const tipsOpen={};
 document.addEventListener("click",e=>{const t=e.target.closest("[data-tips]");if(t){const id=t.dataset.tips;tipsOpen[id]=!tipsOpen[id];renderToday();renderTracker();return}
  const ta=e.target.closest("[data-tipadd]");if(ta){const f=findMicro(ta.dataset.tipadd);if(f){lf={area:"",type:"",applied:"",q:""};nf={text:"",areaId:f.a.id,habitId:f.m.id,type:"video",title:"",author:"",ref:"",url:""};show("lib")}}});
@@ -453,23 +467,23 @@ function renderSum(){if(sw==null)sw=sumDefault();const ws=sumWs(sw),S=weekSummar
  const d=S.pct!=null&&Pv.pct!=null?S.pct-Pv.pct:null,open=S.up<S.we;
  let h=`<div class="panel"><div class="row"><button class="btn small" data-sw="-1">←</button><div style="text-align:center"><strong>Settimana ${isoWeek(ws).num}</strong><div class="small muted">${fmt(ws)} – ${fmt(S.we)}${open?" · in corso":""}</div></div><button class="btn small" data-sw="1" ${sw>=0?"disabled":""}>→</button></div></div>`;
  h+=`<div class="panel"><div class="row"><div><h2>Riepilogo</h2><div class="muted small">${S.pct==null?"Nessuna abitudine misurabile in questa settimana.":(d==null?"Prima settimana con dati":(d>0?"+":"")+d+" punti rispetto alla settimana prima")}</div></div><div class="kpi">${S.pct==null?"—":S.pct+"%"}</div></div><div class="track"><span style="width:${S.pct||0}%"></span></div></div>`;
- h+=list("Andate bene (≥ 85%)",S.good,"✅")+list("A metà (50–84%)",S.mid,"🟡")+list("Andate male (< 50%)",S.bad,"⚠️");
+ h+=list("Andate bene (≥ 85%)",S.good,"")+list("A metà (50–84%)",S.mid,"")+list("Andate male (< 50%)",S.bad,"");
  const ar=S.areas.filter(a=>a.pct!=null).sort((a,b)=>a.pct-b.pct);
  if(ar.length)h+=`<div class="panel"><h3>Per area</h3>${ar.map(a=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${a.a.icon} ${esc(a.a.name)} <span class="muted">(${a.n})</span></span><strong>${a.pct}%</strong></div>`).join("")}</div>`;
- if(S.behind.length)h+=`<div class="panel"><h3>🏁 Obiettivi del ciclo in ritardo</h3>${S.behind.map(b=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(b.g.title)}</span><strong>${b.pct}%</strong></div>`).join("")}</div>`;
- if(S.monthly.length)h+=`<div class="panel"><h3>📅 Mensili in corso</h3>${S.monthly.map(x=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(x.m.habit||x.m.label)}</span><span>${fmtN(x.c)} / ${fmtN(x.t)}</span></div>`).join("")}</div>`;
+ if(S.behind.length)h+=`<div class="panel"><h3>Obiettivi del ciclo in ritardo</h3>${S.behind.map(b=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(b.g.title)}</span><strong>${b.pct}%</strong></div>`).join("")}</div>`;
+ if(S.monthly.length)h+=`<div class="panel"><h3>Mensili in corso</h3>${S.monthly.map(x=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(x.m.habit||x.m.label)}</span><span>${fmtN(x.c)} / ${fmtN(x.t)}</span></div>`).join("")}</div>`;
  const tips=sumTips(S,Pv);
  h+=`<div class="panel"><h3>💡 Consigli per la prossima settimana</h3>${tips.length?tips.map(t=>`<div style="padding:7px 0;border-top:1px solid var(--line)">${t}</div>`).join(""):'<div class="small muted">Niente da correggere: continua così.</div>'}<p class="small muted" style="margin-top:8px">Consigli generati da regole semplici sui tuoi dati, non da un\'IA.</p></div><div class="panel"><button class="btn primary" data-sumrev>Scrivi la revisione →</button></div>`;
  $("sumBody").innerHTML=h}
 $("sumBody").onclick=e=>{const b=e.target.closest("[data-sw]");if(b){sw=Math.min(0,sw+ +b.dataset.sw);renderSum();return}if(e.target.closest("[data-sumrev]")){$("weekDate").value=ymd(weekSumEnd());renderWeekAuto();show("reviews")}};
 const weekSumEnd=()=>addDays(sumWs(sw==null?sumDefault():sw),6);
 function sumBanner(T){const d=T.getDay();if(d!==0&&d!==1&&d!==2)return"";const ws=d===0?mondayOf(T):addDays(mondayOf(T),-7),k=isoWeek(ws).key;if(data.ui.seenWeek===k)return"";
- return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>🗓️ Riepilogo della settimana ${isoWeek(ws).num} pronto</strong><div class="small muted">Cosa è andato bene, cosa no e cosa correggere.</div></div><div><button class="btn small primary" data-sumopen="${k}">Apri</button> <button class="btn small" data-sumhide="${k}">Nascondi</button></div></div></div>`}
+ return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>Riepilogo della settimana ${isoWeek(ws).num} pronto</strong><div class="small muted">Cosa è andato bene, cosa no e cosa correggere.</div></div><div><button class="btn small primary" data-sumopen="${k}">Apri</button> <button class="btn small" data-sumhide="${k}">Nascondi</button></div></div></div>`}
 
 /* ===== Revisioni collegate ai dati ===== */
 function autoBlock(pct,areas,behind,extra){const ar=areas.filter(a=>a.pct!=null).sort((a,b)=>a.pct-b.pct).slice(0,2);return{pct,neglected:ar.map(a=>({name:a.a.icon+" "+a.a.name,pct:a.pct})),behind:behind.map(b=>({title:b.g.title,pct:b.pct})),...(extra||{})}}
 function autoHTML(A){if(!A||A.pct==null&&!A.behind.length)return'<div class="small muted">Nessun dato misurabile in questo periodo: scrivi pure le tue riflessioni.</div>';
- return `<strong>📊 Dati del periodo</strong> <span class="small muted">(compilati in automatico)</span><div class="small" style="margin-top:6px"><div class="row"><span>Completamento abitudini</span><strong>${A.pct==null?"—":A.pct+"%"}</strong></div>${A.neglected.length?`<div class="row" style="padding-top:4px"><span>Aree più trascurate</span><span>${A.neglected.map(n=>esc(n.name)+" "+n.pct+"%").join(" · ")}</span></div>`:""}${A.behind.length?`<div style="padding-top:4px">Obiettivi del ciclo in ritardo:${A.behind.map(b=>`<div class="row"><span>• ${esc(b.title)}</span><strong>${b.pct}%</strong></div>`).join("")}</div>`:""}${A.delta?`<div style="padding-top:4px">Punteggi aree: ${A.delta}</div>`:""}</div>`}
+ return `<strong>Dati del periodo</strong> <span class="small muted">(compilati in automatico)</span><div class="small" style="margin-top:6px"><div class="row"><span>Completamento abitudini</span><strong>${A.pct==null?"—":A.pct+"%"}</strong></div>${A.neglected.length?`<div class="row" style="padding-top:4px"><span>Aree più trascurate</span><span>${A.neglected.map(n=>esc(n.name)+" "+n.pct+"%").join(" · ")}</span></div>`:""}${A.behind.length?`<div style="padding-top:4px">Obiettivi del ciclo in ritardo:${A.behind.map(b=>`<div class="row"><span>• ${esc(b.title)}</span><strong>${b.pct}%</strong></div>`).join("")}</div>`:""}${A.delta?`<div style="padding-top:4px">Punteggi aree: ${A.delta}</div>`:""}</div>`}
 function weekAuto(){const d=$("weekDate").value;if(!d)return null;const S=weekSummary(mondayOf(parseYmd(d)));return autoBlock(S.pct,S.areas,S.behind)}
 function monthAuto(){const ym=$("monthDate").value;if(!ym)return null;const T=todayD(),Ss=[];let d=mondayOf(new Date(+ym.slice(0,4),+ym.slice(5)-1,1));if(ymd(d).slice(0,7)<ym)d=addDays(d,7);
  for(;ymd(d).slice(0,7)===ym&&d<=T;d=addDays(d,7))Ss.push(weekSummary(d));
@@ -506,21 +520,21 @@ const bkDays=()=>data.ui.backupDays==null?7:+data.ui.backupDays;
 const safeAt=()=>Math.max(data.ui.lastBackup||0,sOn()&&sm.lastAt&&sSt.state!=="error"?sm.lastAt:0);
 const dAgo=t=>Math.floor((Date.now()-t)/864e5);
 function backupBanner(T){const N=bkDays();if(!N||!data.areas.some(a=>a.micros.length)||data.ui.backupSnooze===ymd(T))return"";const t=safeAt();if(t&&dAgo(t)<N)return"";
- return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>💾 Fai un backup</strong><div class="small muted">${t?"Ultimo backup o sincronizzazione: "+dAgo(t)+" giorni fa.":"Non hai ancora fatto nessun backup."}</div></div><div><button class="btn small primary" data-bk="now">Esporta</button> <button class="btn small" data-bk="later">Più tardi</button></div></div></div>`}
+ return `<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>Fai un backup</strong><div class="small muted">${t?"Ultimo backup o sincronizzazione: "+dAgo(t)+" giorni fa.":"Non hai ancora fatto nessun backup."}</div></div><div><button class="btn small primary" data-bk="now">Esporta</button> <button class="btn small" data-bk="later">Più tardi</button></div></div></div>`}
 function renderBk(){const b=document.getElementById("bkBox");if(!b)return;const lb=data.ui.lastBackup;
  b.innerHTML=`<div class="small"><div class="row"><span>Ultimo backup scaricato</span><strong>${lb?sTime(lb):"mai"}</strong></div>${sOn()?`<div class="row"><span>Ultima sincronizzazione</span><strong>${sTime(sm.lastAt)}</strong></div>`:""}</div>
  <div class="field" style="margin-top:10px"><label>Ricordami il backup dopo</label><select id="bkDays">${[[7,"7 giorni"],[14,"14 giorni"],[30,"30 giorni"],[0,"Mai"]].map(([v,l])=>`<option value="${v}" ${bkDays()===v?"selected":""}>${l}</option>`).join("")}</select><span class="small muted">L'avviso compare in Oggi. Una sincronizzazione recente e funzionante conta come backup.</span></div>
- <div class="small" style="margin-top:8px"><strong>Archiviazione del browser:</strong> ${persisted===true?"protetta ✅":persisted===false?"non protetta ⚠️ — il browser potrebbe cancellare i dati se manca spazio.":"stato non disponibile su questo browser."}</div>${persisted===false?'<button class="btn small" data-bk="persist" style="margin-top:6px">Richiedi la protezione</button>':""}`}
+ <div class="small" style="margin-top:8px"><strong>Archiviazione del browser:</strong> ${persisted===true?"protetta":persisted===false?"non protetta — il browser potrebbe cancellare i dati se manca spazio.":"stato non disponibile su questo browser."}</div>${persisted===false?'<button class="btn small" data-bk="persist" style="margin-top:6px">Richiedi la protezione</button>':""}`}
 document.addEventListener("change",e=>{if(e.target.id==="bkDays"){data.ui.backupDays=+e.target.value;save();renderBk();renderToday()}});
 function renderHistory(){let out=[];Object.entries(data.reviews.weeks||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Settimana · ${d}${r.auto&&r.auto.pct!=null?" · "+r.auto.pct+"%":""}</strong><div>${esc(r.next||r.wins||"Revisione salvata")}</div></div>`));Object.entries(data.reviews.months||{}).sort().reverse().forEach(([d,r])=>out.push(`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><strong>Mese · ${d}${r.auto&&r.auto.pct!=null?" · "+r.auto.pct+"%":""}</strong><div>${esc(r.action||r.best||"Revisione salvata")}</div></div>`));$("reviewHistory").innerHTML=out.join("")||"Ancora nessuna revisione salvata."}
 function renderReleases(){document.querySelectorAll(".appv").forEach(e=>e.textContent="v"+APP_VERSION);$("releaseNotes").innerHTML=RELEASES.map((r,i)=>`<details class="rel" ${i===0?"open":""}><summary>v${r.v} · ${esc(r.title)}${r.date?` <span class="small muted">(${r.date})</span>`:""}</summary><ul class="small">${r.items.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></details>`).join("")}
-const MC=["#c18b42","#315c49"];
+const MC=["var(--gold)","var(--green)"];
 const mlab=k=>{const [y,m]=k.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("it-IT",{month:"short",year:"numeric"})};
 const scoresNow=()=>Object.fromEntries(data.areas.map(a=>[a.id,+a.score]));
 function snap(){data.snapshots[ymd(new Date()).slice(0,7)]=scoresNow()}
 function radarSVG(series){const n=data.areas.length,C=210,R=125,ang=i=>-Math.PI/2+2*Math.PI*i/n,pt=(i,v)=>[C+R*v/10*Math.cos(ang(i)),C+R*v/10*Math.sin(ang(i))];
- let g="";[2,4,6,8,10].forEach(l=>{g+=`<polygon points="${data.areas.map((_,i)=>pt(i,l).join(",")).join(" ")}" fill="none" stroke="#d8dfd9"/>`});
- data.areas.forEach((a,i)=>{const [x,y]=pt(i,10),[lx,ly]=pt(i,11.7),c=Math.cos(ang(i));g+=`<line x1="${C}" y1="${C}" x2="${x}" y2="${y}" stroke="#d8dfd9"/><text x="${lx}" y="${ly}" text-anchor="${Math.abs(c)<.2?"middle":c>0?"start":"end"}" dominant-baseline="middle" font-size="12" fill="#1d2924">${a.icon} ${esc(a.name)}</text>`});
+ let g="";[2,4,6,8,10].forEach(l=>{g+=`<polygon points="${data.areas.map((_,i)=>pt(i,l).join(",")).join(" ")}" fill="none" stroke="var(--line2)"/>`});
+ data.areas.forEach((a,i)=>{const [x,y]=pt(i,10),[lx,ly]=pt(i,11.7),c=Math.cos(ang(i));g+=`<line x1="${C}" y1="${C}" x2="${x}" y2="${y}" stroke="var(--line2)"/><text x="${lx}" y="${ly}" text-anchor="${Math.abs(c)<.2?"middle":c>0?"start":"end"}" dominant-baseline="middle" font-size="12" fill="var(--ink)">${a.icon} ${esc(a.name)}</text>`});
  series.forEach(s=>{const pts=data.areas.map((a,i)=>pt(i,+s.sc[a.id]||0));g+=`<polygon points="${pts.map(p=>p.join(",")).join(" ")}" fill="${s.color}" fill-opacity="${s.fill}" stroke="${s.color}" stroke-width="2" ${s.dash?'stroke-dasharray="6 4"':""}/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${s.color}"/>`).join("")});
  return `<svg viewBox="-50 -10 520 440" width="100%" role="img" aria-label="Grafico radar del Cerchio della Vita">${g}</svg>`}
 let cmpA,cmpB;
@@ -563,7 +577,7 @@ function goalStats(g,c,T){
 function cyclePct(c){const T=todayD(),end=addDays(parseYmd(c.start),83),t=T<end?T:end;let E=0,A=0;c.goals.forEach(g=>{const s=goalStats(g,c,t);E+=s.E;A+=s.A});return E?Math.round(A/E*100):null}
 const mCur=m=>m&&m.log&&m.log.length?m.log[m.log.length-1].v:(m&&m.start!=null?m.start:null);
 const mProg=m=>{if(!m||m.start==null||m.target==null||m.start===m.target)return null;const c=mCur(m);if(c==null)return null;return Math.max(0,Math.min(100,Math.round((c-m.start)/(m.target-m.start)*100)))};
-const mBox=g=>{const m=g.metric;if(!m||!m.name)return"";const p=mProg(m),c=mCur(m),u=m.unit?" "+esc(m.unit):"";return `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)"><div class="row small"><strong>🎯 ${esc(m.name)}</strong><span>${fmtN(m.start)} → <strong>${fmtN(c)}${u}</strong> → ${fmtN(m.target)}${u}${p==null?"":" · "+p+"%"}</span></div><div class="track"><span style="width:${p||0}%"></span></div><div class="row" style="gap:6px;margin-top:6px"><input type="text" inputmode="decimal" autocomplete="off" data-mval="${g.id}" placeholder="Valore attuale${m.unit?" ("+esc(m.unit)+")":""}" style="flex:1"><button class="btn small" data-act="mlog" data-id="${g.id}">Aggiorna</button></div></div>`};
+const mBox=g=>{const m=g.metric;if(!m||!m.name)return"";const p=mProg(m),c=mCur(m),u=m.unit?" "+esc(m.unit):"";return `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)"><div class="row small"><strong>${esc(m.name)}</strong><span>${fmtN(m.start)} → <strong>${fmtN(c)}${u}</strong> → ${fmtN(m.target)}${u}${p==null?"":" · "+p+"%"}</span></div><div class="track"><span style="width:${p||0}%"></span></div><div class="row" style="gap:6px;margin-top:6px"><input type="text" inputmode="decimal" autocomplete="off" data-mval="${g.id}" placeholder="Valore attuale${m.unit?" ("+esc(m.unit)+")":""}" style="flex:1"><button class="btn small" data-act="mlog" data-id="${g.id}">Aggiorna</button></div></div>`};
 const bars=w=>`<div class="wks">${w.map(x=>`<div class="wk" title="Settimana ${x.n}"><b><span class="${x.pct>=85?"ok":""}" style="height:${x.pct==null?0:Math.min(100,x.pct)}%"></span></b><i>${x.n}</i></div>`).join("")}</div>`;
 let ed=null;
 function editor(){const a=data.areas.find(x=>x.id===ed.areaId),oth=ed.habits.filter(id=>!a.micros.some(m=>m.id===id)).length;
@@ -581,7 +595,7 @@ function renderCycle(){const T=todayD(),c=data.cycles.find(x=>x.id===data.active
    return `<div class="panel"><div class="row"><strong>${esc(g.title)}</strong><span class="score">${s.pct==null?"—":s.pct+"%"}</span></div><div class="small muted">${a.icon} ${esc(a.name)}</div><div class="track"><span style="width:${s.pct||0}%"></span></div>${bars(s.weeks)}<div>${chips}</div>${mBox(g)}<div class="actions"><button class="btn" data-act="edit" data-id="${g.id}">Modifica</button></div></div>`}).join("")
   +(days>83?revPanel(c,gs,pct):"")+`<div class="panel"><div class="actions" style="margin:0"><button class="btn primary" data-act="addGoal">+ Aggiungi obiettivo</button><button class="btn danger" data-act="close">Chiudi ciclo</button></div></div>`}
  const old=data.cycles.filter(x=>x.closed);
- if(old.length)h+=`<div class="panel"><h3>Cicli conclusi</h3>${old.map(x=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(x.name)} · ${fmt(parseYmd(x.start))} – ${fmt(addDays(parseYmd(x.start),83))}</span><strong>${x.finalPct==null?"–":x.finalPct+"%"}</strong></div>${x.review&&(x.review.lessons||x.review.next)?`<div class="small muted" style="padding-bottom:6px">${x.review.lessons?"💡 "+esc(x.review.lessons):""}${x.review.next?"<br>➡️ "+esc(x.review.next):""}</div>`:""}`).join("")}</div>`;
+ if(old.length)h+=`<div class="panel"><h3>Cicli conclusi</h3>${old.map(x=>`<div class="row small" style="padding:6px 0;border-top:1px solid var(--line)"><span>${esc(x.name)} · ${fmt(parseYmd(x.start))} – ${fmt(addDays(parseYmd(x.start),83))}</span><strong>${x.finalPct==null?"–":x.finalPct+"%"}</strong></div>${x.review&&(x.review.lessons||x.review.next)?`<div class="small muted" style="padding-bottom:6px">${x.review.lessons?"💡 "+esc(x.review.lessons):""}${x.review.next?"<br>Prossimo ciclo: "+esc(x.review.next):""}</div>`:""}`).join("")}</div>`;
  $("cycleBody").innerHTML=h}
 $("cycleBody").onclick=e=>{const b=e.target.closest("[data-act]");if(!b)return;const act=b.dataset.act,c=data.cycles.find(x=>x.id===data.activeCycle);
  if(act==="newHabit"){openSheet({areaId:ed.areaId,after:m=>{ed.habits.push(m.id)}});return}
@@ -598,11 +612,11 @@ $("cycleBody").onclick=e=>{const b=e.target.closest("[data-act]");if(!b)return;c
 $("cycleBody").oninput=e=>{if(e.target.matches("[data-gt]"))ed.title=e.target.value;else if(e.target.matches("[data-m]"))ed.m[e.target.dataset.m]=e.target.value};
 $("cycleBody").onchange=e=>{const t=e.target;if(t.matches("[data-garea]")){ed.areaId=+t.value;renderCycle()}else if(t.matches("[data-gh]")){const id=t.dataset.gh;ed.habits=t.checked?[...ed.habits,id]:ed.habits.filter(x=>x!==id)}};
 function lineSVG(p,max,u){const W=360,H=170,L=34,R=10,T=10,B=26,n=p.length,X=i=>L+(n>1?i*(W-L-R)/(n-1):(W-L-R)/2),Y=v=>T+(H-T-B)*(1-v/max);
- let g=[0,.5,1].map(f=>{const y=Y(max*f);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#e2e7e1"/><text x="${L-5}" y="${y}" font-size="10" text-anchor="end" dominant-baseline="middle" fill="#68756e">${Math.round(max*f)}${u}</text>`}).join("");
+ let g=[0,.5,1].map(f=>{const y=Y(max*f);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-5}" y="${y}" font-size="10" text-anchor="end" dominant-baseline="middle" fill="var(--muted)">${Math.round(max*f)}${u}</text>`}).join("");
  const pts=p.map((d,i)=>d.v==null?null:[X(i),Y(d.v)]);
- pts.forEach((t,i)=>{if(t&&i&&pts[i-1])g+=`<line x1="${pts[i-1][0]}" y1="${pts[i-1][1]}" x2="${t[0]}" y2="${t[1]}" stroke="#315c49" stroke-width="2.5"/>`});
- g+=pts.map((t,i)=>t?`<circle cx="${t[0]}" cy="${t[1]}" r="3.5" fill="#315c49"/><text x="${t[0]}" y="${t[1]-8}" font-size="9" text-anchor="middle" fill="#315c49">${p[i].v}</text>`:"").join("");
- p.forEach((d,i)=>{if(n<=6||i%2===0||i===n-1)g+=`<text x="${X(i)}" y="${H-8}" font-size="10" text-anchor="middle" fill="#68756e">${d.x}</text>`});
+ pts.forEach((t,i)=>{if(t&&i&&pts[i-1])g+=`<line x1="${pts[i-1][0]}" y1="${pts[i-1][1]}" x2="${t[0]}" y2="${t[1]}" stroke="var(--green)" stroke-width="2.5"/>`});
+ g+=pts.map((t,i)=>t?`<circle cx="${t[0]}" cy="${t[1]}" r="3.5" fill="var(--green)"/><text x="${t[0]}" y="${t[1]-8}" font-size="9" text-anchor="middle" fill="var(--green)">${p[i].v}</text>`:"").join("");
+ p.forEach((d,i)=>{if(n<=6||i%2===0||i===n-1)g+=`<text x="${X(i)}" y="${H-8}" font-size="10" text-anchor="middle" fill="var(--muted)">${d.x}</text>`});
  return `<svg viewBox="0 0 ${W} ${H}" width="100%">${g}</svg>`}
 let dashArea="all",cmpN=4;
 function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapshots).sort(),empty='<div class="empty">Ancora nessun dato da mostrare.</div>';
@@ -626,25 +640,27 @@ function renderDash(){const T=todayD(),cm=mondayOf(T),ks=Object.keys(data.snapsh
 <div class="panel"><div class="row"><h3>Confronto tra periodi</h3><select data-cmpn style="width:auto">${[[1,"Ultima settimana"],[4,"Ultime 4 settimane"],[12,"Ultime 12 settimane"]].map(o=>`<option value="${o[0]}" ${o[0]===cmpN?"selected":""}>${o[1]}</option>`).join("")}</select></div><p class="small muted">Periodo scelto contro quello precedente di pari durata (settimane complete). Punteggi: ultimi due mesi salvati.</p>${row("<strong>Totale</strong>",scCell(prev,cur,"all"),cell(rate(A0,cmpN),rate(B,cmpN)))}${data.areas.map(a=>row(`${a.icon} ${esc(a.name)}`,scCell(prev,cur,a.id),cell(rate(A0,cmpN,x=>x.a.id===a.id),rate(B,cmpN,x=>x.a.id===a.id)))).join("")}</div>`}
 $("dashBody").onchange=e=>{const t=e.target;if(t.matches("[data-dasharea]")){dashArea=t.value;renderDash()}else if(t.matches("[data-cmpn]")){cmpN=+t.value;renderDash()}};
 function renderToday(){
- const T=todayD(),P=periods(ymd(T)),all=items(ymd(T)),fr=["daily","weekly","monthly"],tb=$("todayBody");
+ const D=ds(),T=parseYmd(D),isT=D===ymd(todayD()),P=periods(D),all=items(D),fr=["daily","weekly","monthly"],tb=$("todayBody");
+ $("todayBtn").classList.toggle("hidden",isT);$("dNext").disabled=isT;
  const isDone=x=>count(x.m.freq,P[x.m.freq].k,x.m.id)>=tgt(x.m.freq,x.m),isSk=x=>sk(x.m.freq,P[x.m.freq].k,x.m.id);
  const skp=all.filter(isSk),live=all.filter(x=>!isSk(x)),pend=live.filter(x=>!isDone(x)),dn=live.filter(isDone),total=live.length,part=pend.reduce((t,x)=>t+(x.m.unit?prog(x.m.freq,x.m,count(x.m.freq,P[x.m.freq].k,x.m.id)):0),0),pct=total?Math.round((dn.length+part)/total*100):0;
  const op={};tb.querySelectorAll("details[data-d]").forEach(d=>op[d.dataset.d]=d.open);
  const lw=7-((T.getDay()+6)%7),lm=new Date(T.getFullYear(),T.getMonth()+1,0).getDate()-T.getDate()+1;
- const hint={daily:"",weekly:lw+(lw===1?" giorno":" giorni")+" alla fine della settimana",monthly:lm+(lm===1?" giorno":" giorni")+" alla fine del mese"};
- const head={daily:"Oggi",weekly:"Questa settimana",monthly:"Questo mese"};
- const sub=(pend.length?pend.length+" da fare · "+dn.length+" completate":total?"Tutto fatto per ora 🎉":all.length?"Tutto saltato per ora":"Nessuna abitudine attiva")+(skp.length&&(total||pend.length)?" · "+skp.length+" saltate":"");
- const vNow=(data.vacations||[]).filter(v=>v.from<=ymd(T)&&(!v.to||ymd(T)<=v.to)),banner=vNow.map(v=>`<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>🏖️ ${esc(v.name||"Modalità vacanza")} attiva</strong><div class="small muted">${v.all?"Tutte le abitudini sospese":(v.ids||[]).length+" abitudini sospese"} · ${v.to?"fino al "+fmtFull(v.to):"senza data di fine"}</div></div><button class="btn small" data-vacstop="${esc(v.id)}">Termina</button></div></div>`).join("");
+ const hint={daily:"",weekly:isT?lw+(lw===1?" giorno":" giorni")+" alla fine della settimana":"",monthly:isT?lm+(lm===1?" giorno":" giorni")+" alla fine del mese":""};
+ const head={daily:isT?"Oggi":"Giornaliere",weekly:isT?"Questa settimana":P.weekly.label,monthly:isT?"Questo mese":P.monthly.label};
+ const sub=(pend.length?pend.length+" da fare · "+dn.length+" completate":total?"Tutto fatto per ora":all.length?"Tutto saltato per ora":"Nessuna abitudine attiva")+(skp.length&&(total||pend.length)?" · "+skp.length+" saltate":"");
+ const vNow=(data.vacations||[]).filter(v=>v.from<=ymd(T)&&(!v.to||ymd(T)<=v.to)),banner=vNow.map(v=>`<div class="panel" style="background:var(--soft)"><div class="row"><div><strong>${esc(v.name||"Modalità vacanza")} attiva</strong><div class="small muted">${v.all?"Tutte le abitudini sospese":(v.ids||[]).length+" abitudini sospese"} · ${v.to?"fino al "+fmtFull(v.to):"senza data di fine"}</div></div><button class="btn small" data-vacstop="${esc(v.id)}">Termina</button></div></div>`).join("");
  let h=`<div class="panel"><div class="row"><div><h2 style="text-transform:capitalize">${esc(P.daily.label)}</h2><div class="muted small">${sub}</div></div><div class="kpi">${pct}%</div></div><div class="track"><span style="width:${pct}%"></span></div></div>`;
- h+=banner+syncBanner()+backupBanner(T)+sumBanner(T);
+ h+=isT?banner+syncBanner()+backupBanner(T)+sumBanner(T):'<div class="small muted" style="margin:-4px 0 12px">Stai modificando un giorno passato.</div>';
  fr.forEach(f=>{const it=pend.filter(x=>x.m.freq===f);if(it.length)h+=`<div class="panel"><div class="row"><h3>${head[f]}</h3><span class="small muted">${hint[f]}</span></div>${it.map(x=>habitRow(f,P[f].k,x,{skip:true})).join("")}</div>`});
  if(!all.length)h+='<div class="panel"><div class="empty">Crea la tua prima abitudine con «＋ Abitudine» in alto.</div></div>';
  if(dn.length)h+=`<div class="panel"><details data-d="dn" ${op.dn?"open":""}><summary style="cursor:pointer;font-weight:700">Completate (${dn.length})</summary>${dn.map(x=>habitRow(x.m.freq,P[x.m.freq].k,x)).join("")}</details></div>`;
  if(skp.length)h+=`<div class="panel"><details data-d="sk" ${op.sk?"open":""}><summary style="cursor:pointer;font-weight:700">Saltate (${skp.length})</summary>${skp.map(x=>habitRow(x.m.freq,P[x.m.freq].k,x,skO(x.m.freq,P[x.m.freq].k,x.m.id))).join("")}</details></div>`;
  tb.innerHTML=h}
-$("todayBody").onclick=e=>{const bk=e.target.closest("[data-bk]");if(bk){if(bk.dataset.bk==="now"){$("export").click();renderToday()}else{data.ui.backupSnooze=ymd(todayD());save();renderToday()}return}if(e.target.closest("[data-syopen]")){show("backup");return}const so=e.target.closest("[data-sumopen],[data-sumhide]");if(so){data.ui.seenWeek=so.dataset.sumopen||so.dataset.sumhide;save();if(so.dataset.sumopen){sw=todayD().getDay()===0?0:-1;show("sum")}else renderToday();return}const vs=e.target.closest("[data-vacstop]");if(vs){endVac(vs.dataset.vacstop);return}const sb=e.target.closest("[data-skip],[data-unskip]");if(sb){doSkip(sb,ymd(new Date()));return}const b=e.target.closest("[data-step]");if(!b)return;bump(b.dataset.f,periods(ymd(new Date()))[b.dataset.f].k,b.dataset.id,parseFloat(b.dataset.step));save();renderToday();renderTracker();renderOverview()};
-$("todayBody").onchange=e=>{const qi=e.target.closest("[data-qty]");if(qi){setQty(qi,ymd(new Date()));save();renderToday();renderTracker();renderOverview();return}const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ymd(new Date()))[f].k)[c.dataset.chk]=c.checked?1:0;save();renderToday();renderTracker();renderOverview()};
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderToday()});
+$("todayBody").onclick=e=>{const bk=e.target.closest("[data-bk]");if(bk){if(bk.dataset.bk==="now"){$("export").click();renderToday()}else{data.ui.backupSnooze=ymd(todayD());save();renderToday()}return}if(e.target.closest("[data-syopen]")){show("backup");return}const so=e.target.closest("[data-sumopen],[data-sumhide]");if(so){data.ui.seenWeek=so.dataset.sumopen||so.dataset.sumhide;save();if(so.dataset.sumopen){sw=todayD().getDay()===0?0:-1;show("sum")}else renderToday();return}const vs=e.target.closest("[data-vacstop]");if(vs){endVac(vs.dataset.vacstop);return}const sb=e.target.closest("[data-skip],[data-unskip]");if(sb){doSkip(sb,ds());return}const b=e.target.closest("[data-step]");if(!b)return;bump(b.dataset.f,periods(ds())[b.dataset.f].k,b.dataset.id,parseFloat(b.dataset.step));save();renderToday();renderTracker();renderOverview()};
+$("todayBody").onchange=e=>{const qi=e.target.closest("[data-qty]");if(qi){setQty(qi,ds());save();renderToday();renderTracker();renderOverview();return}const c=e.target.closest("[data-chk]");if(!c)return;const f=c.dataset.f;store(f,periods(ds())[f].k)[c.dataset.chk]=c.checked?1:0;save();renderToday();renderTracker();renderOverview()};
+let lastToday=ymd(new Date());
+document.addEventListener("visibilitychange",()=>{if(document.hidden)return;const t=ymd(new Date());if(t!==lastToday){if($("trackerDate").value===lastToday)$("trackerDate").value=t;lastToday=t;$("trackerDate").max=t}renderToday()});
 const RANGES={"7g":{t:"7 giorni",d:7,w:1,m:1},"1m":{t:"1 mese",d:30,w:4,m:1},"6m":{t:"6 mesi",d:182,w:26,m:6},"12m":{t:"12 mesi",d:365,w:52,m:12}};
 let statRange="1m",statSort="area",statKind="all",statOpen={daily:true,weekly:true,monthly:true};
 const act=(m,a,b)=>(m.spans||[]).some(p=>p.from<=b&&(!p.to||a<p.to));
@@ -674,23 +690,23 @@ function habitStat(x,R){const {unit,list}=unitsFor(x.m.freq,R);let E=0,A=0;
  return{bk,pct:E?Math.round(A/E*100):null}}
 function freqSeries(rows){return rows.length?rows[0].st.bk.map((b,i)=>{const v=rows.map(r=>r.st.bk[i].v).filter(x=>x!=null);return{v:v.length?avgOf(v):null,partial:b.partial,label:b.label,short:b.short}}):[]}
 function traceSVG(bk,h){const W=360,n=bk.length,gap=n>40?1:2,bw=(W-(n-1)*gap)/n;
- let g=`<rect x="0" y="${h-1}" width="${W}" height="1" fill="#d8dfd9"/>`;
+ let g=`<rect x="0" y="${h-1}" width="${W}" height="1" fill="var(--line2)"/>`;
  bk.forEach((b,i)=>{const x=i*(bw+gap);
-  if(b.v==null){g+=`<rect x="${x}" y="${h-3}" width="${bw}" height="2" fill="#e2e7e1"><title>${esc(b.label)} · ${b.skip?"saltata":"nessun dato"}</title></rect>`;return}
+  if(b.v==null){g+=`<rect x="${x}" y="${h-3}" width="${bw}" height="2" fill="var(--line)"><title>${esc(b.label)} · ${b.skip?"saltata":"nessun dato"}</title></rect>`;return}
   const bh=Math.max(2,Math.round(b.v*(h-4)));
-  g+=`<rect x="${x}" y="${h-1-bh}" width="${bw}" height="${bh}" rx="1" fill="${b.v>=.85?"#315c49":"#c18b42"}" opacity="${b.partial?.4:1}"><title>${esc(b.label)} · ${Math.round(b.v*100)}%${b.partial?" (in corso)":""}</title></rect>`});
+  g+=`<rect x="${x}" y="${h-1-bh}" width="${bw}" height="${bh}" rx="1" fill="${b.v>=.85?"var(--green)":"var(--gold)"}" opacity="${b.partial?.4:1}"><title>${esc(b.label)} · ${Math.round(b.v*100)}%${b.partial?" (in corso)":""}</title></rect>`});
  return `<svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="none" role="img" aria-label="Tracciato cronologico">${g}</svg>`}
 function renderStats(){const body=$("statsBody");if(!body)return;
  const R=RANGES[statRange];
  const rows=statItems().filter(x=>statKind==="all"||(x.m.kind==="quit")===(statKind==="quit")).map(x=>({x,st:habitStat(x,R),stk:streakOf(x.m,true)})).filter(r=>r.st.pct!=null||(!r.x.m.archived&&r.x.m.enabled));
  const byF={daily:[],weekly:[],monthly:[]};rows.forEach(r=>byF[r.x.m.freq].push(r));
- const top=rows.filter(r=>r.x.m.freq==="daily"&&r.stk.cur>=2).sort((a,b)=>b.stk.cur-a.stk.cur)[0],bestLine=top?`<div class="small" style="margin-top:10px">🔥 Serie giornaliera più lunga in corso: <strong>${top.stk.cur} giorni</strong> · ${esc(top.x.m.habit)}</div>`:"";
+ const top=rows.filter(r=>r.x.m.freq==="daily"&&r.stk.cur>=2).sort((a,b)=>b.stk.cur-a.stk.cur)[0],bestLine=top?`<div class="small" style="margin-top:10px">Serie giornaliera più lunga in corso: <strong>${top.stk.cur} giorni</strong> · ${esc(top.x.m.habit)}</div>`:"";
  const pcts=a=>a.map(r=>r.st.pct).filter(v=>v!=null),avg=a=>{const p=pcts(a);return p.length?Math.round(avgOf(p)):null};
  const kpi=(v,t,sub)=>`<div><div class="kpi">${v==null?"—":v+"%"}</div><div class="small muted">${t}</div>${sub?`<div class="small muted">${sub}</div>`:""}</div>`;
  const ptxt=f=>f==="daily"?(statRange==="7g"?"ultimi 7 giorni":statRange==="1m"?"ultimi 30 giorni":statRange==="6m"?"ultimi 6 mesi · barre settimanali":"ultimi 12 mesi · barre mensili"):f==="weekly"?"ultime "+R.w+(R.w===1?" settimana conclusa":" settimane concluse"):(R.m===1?"ultimo mese concluso":"ultimi "+R.m+" mesi conclusi");
  const sortRows=a=>{const c=[...a];if(statSort==="low")c.sort((p,q)=>(p.st.pct==null?1e9:p.st.pct)-(q.st.pct==null?1e9:q.st.pct));else if(statSort==="high")c.sort((p,q)=>(q.st.pct==null?-1:q.st.pct)-(p.st.pct==null?-1:p.st.pct));return c};
  const ends=bk=>`<div class="row small muted"><span>${esc(bk[0].short)}</span><span>${esc(bk[bk.length-1].short)}</span></div>`;
- const rowH=r=>{const m=r.x.m,a=r.x.a,bk=r.st.bk;return `<div style="padding:10px 0;border-top:1px solid var(--line)"><div class="row"><div><strong>${esc(m.habit)}</strong><div class="small muted">${a.icon} ${esc(a.name)} · ${tagOf(m)}${m.archived?" · archiviata":""}</div></div><span class="score">${r.st.pct==null?"—":r.st.pct+"%"}</span></div>${traceSVG(bk,36)}${ends(bk)}<div class="small" style="margin-top:4px">🔥 Serie attuale <strong>${r.stk.cur}</strong> ${STU[m.freq][1]} · record <strong>${r.stk.best}</strong></div></div>`};
+ const rowH=r=>{const m=r.x.m,a=r.x.a,bk=r.st.bk;return `<div style="padding:10px 0;border-top:1px solid var(--line)"><div class="row"><div><strong>${esc(m.habit)}</strong><div class="small muted">${a.icon} ${esc(a.name)} · ${tagOf(m)}${m.archived?" · archiviata":""}</div></div><span class="score">${r.st.pct==null?"—":r.st.pct+"%"}</span></div>${traceSVG(bk,36)}${ends(bk)}<div class="small" style="margin-top:4px">Serie attuale <strong>${r.stk.cur}</strong> ${STU[m.freq][1]} · record <strong>${r.stk.best}</strong></div></div>`};
  const panel=f=>{const rs=sortRows(byF[f]);if(!rs.length)return"";const ser=freqSeries(byF[f]),av=avg(byF[f]);
   return `<div class="panel"><div class="row"><div><h3>${FR[f]}</h3><div class="small muted">${rs.length} abitudini · ${ptxt(f)}</div></div><div style="text-align:right"><div class="kpi">${av==null?"—":av+"%"}</div><div class="small muted">media</div></div></div>${traceSVG(ser,80)}${ends(ser)}<details data-so="${f}" ${statOpen[f]?"open":""} style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:600">Per singola abitudine (${rs.length})</summary>${rs.map(rowH).join("")}</details></div>`};
  body.innerHTML=`<div class="panel"><h2>Statistiche abitudini</h2><p class="muted small">Percentuale di realizzazione sui periodi conclusi in cui l'abitudine era attiva. Il periodo in corso appare più chiaro ed è escluso dal calcolo. Verde dall'85%.</p><div class="seg" id="statSeg">${Object.keys(RANGES).map(k=>`<button data-sr="${k}" class="${k===statRange?"on":""}">${RANGES[k].t}</button>`).join("")}</div><div class="seg" id="statKindSeg" style="margin-top:8px">${[["all","Tutte"],["build","Da costruire"],["quit","Da eliminare"]].map(o=>`<button data-skind="${o[0]}" class="${o[0]===statKind?"on":""}">${o[1]}</button>`).join("")}</div><div class="grid" style="margin-top:14px">${kpi(avg(rows),"media totale",pcts(rows).length+" abitudini")}${kpi(avg(byF.daily),"giornaliere")}${kpi(avg(byF.weekly),"settimanali")}${kpi(avg(byF.monthly),"mensili")}</div>${bestLine}<div class="field" style="margin-top:12px"><label for="statSortSel">Ordina le abitudini</label><select id="statSortSel">${[["area","Per area"],["low","Dalle peggiori"],["high","Dalle migliori"]].map(o=>`<option value="${o[0]}" ${o[0]===statSort?"selected":""}>${o[1]}</option>`).join("")}</select></div></div>`
@@ -712,7 +728,7 @@ function syncVac(){const b=$("vacBody");if(!b||!vf||vf.all)return;
  b.querySelectorAll("[data-varea]").forEach(c=>{const ids=c.dataset.ids.split(","),n=ids.filter(i=>vf.ids.includes(i)).length;c.checked=n===ids.length;c.indeterminate=n>0&&n<ids.length});
  const cnt=b.querySelector("#vacCount");if(cnt)cnt.textContent=vf.ids.length+" selezionate"}
 function renderVac(){const body=$("vacBody");if(!body)return;
- let h=`<div class="panel"><h2>🏖️ Modalità vacanza</h2><p class="muted small">Durante la vacanza le abitudini scelte vengono saltate in automatico: non contano nelle percentuali e non interrompono le serie. Le settimanali e mensili si saltano se la vacanza copre almeno metà del periodo.</p>${vf?"":'<button class="btn primary" data-vac="new">＋ Nuova vacanza</button>'}</div>`;
+ let h=`<div class="panel"><h2>Modalità vacanza</h2><p class="muted small">Durante la vacanza le abitudini scelte vengono saltate in automatico: non contano nelle percentuali e non interrompono le serie. Le settimanali e mensili si saltano se la vacanza copre almeno metà del periodo.</p>${vf?"":'<button class="btn primary" data-vac="new">＋ Nuova vacanza</button>'}</div>`;
  if(vf){
   const chooser=vf.all?"":`<div id="vacCount" class="small muted" style="margin:6px 0"></div><div style="max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px 10px">${data.areas.map(a=>({a,ms:a.micros.filter(m=>m.enabled&&!m.archived&&m.habit.trim())})).filter(x=>x.ms.length).map(({a,ms})=>`<div style="padding:6px 0"><label style="font-weight:700"><input type="checkbox" data-varea="${a.id}" data-ids="${ms.map(m=>esc(m.id)).join(",")}"> ${a.icon} ${esc(a.name)}</label>${ms.map(m=>`<div class="habit" style="margin:4px 0 4px 18px"><input type="checkbox" data-vid="${esc(m.id)}" ${vf.ids.includes(m.id)?"checked":""}><label>${esc(m.habit)} <span class="tag">${esc(tagOf(m))}</span></label></div>`).join("")}</div>`).join("")}</div>`;
   h+=`<div class="panel"><h3>${vf.id?"Modifica vacanza":"Nuova vacanza"}</h3><div class="field"><label>Nome (facoltativo)</label><input data-vf="name" value="${esc(vf.name)}" placeholder="Es. Sardegna" maxlength="40"></div><div class="cmp"><div class="field"><label>Dal</label><input type="date" data-vf="from" value="${vf.from}"></div><div class="field"><label>Al</label><input type="date" data-vf="to" value="${vf.to}" ${vf.open?"disabled":""}></div></div><div class="field"><label><input type="checkbox" data-vf="open" ${vf.open?"checked":""}> Senza data di fine (la termino io)</label></div><div class="field"><label>Cosa salti</label><div class="seg"><button data-vscope="all" class="${vf.all?"on":""}">Tutte le abitudini</button><button data-vscope="sel" class="${vf.all?"":"on"}">Solo alcune</button></div></div>${chooser}<div class="actions"><button class="btn primary" data-vac="save">Salva</button><button class="btn" data-vac="cancel">Annulla</button></div></div>`}
@@ -736,10 +752,27 @@ $("vacBody").onchange=e=>{const t=e.target;
  else if(t.dataset.varea!=null){const ids=t.dataset.ids.split(",");vf.ids=t.checked?[...new Set([...vf.ids,...ids])]:vf.ids.filter(i=>!ids.includes(i));$("vacBody").querySelectorAll("[data-vid]").forEach(c=>{if(ids.includes(c.dataset.vid))c.checked=t.checked});syncVac()}
  else if(t.dataset.vid!=null){vf.ids=t.checked?[...new Set([...vf.ids,t.dataset.vid])]:vf.ids.filter(i=>i!==t.dataset.vid);syncVac()}};
 function renderAll(){renderVac();renderStats();renderToday();renderRadar();renderCycle();renderDash();renderOverview();renderAreaPicker();renderTracker();renderHistory();renderWeekAuto();renderMonthAuto()}
-function show(id){closeNav();if(id==="vac")renderVac();if(id==="lib")renderLib();if(id==="arch")renderArch();if(id==="backup"){renderSync();renderBk()}if(id==="sum")renderSum();if(id==="stats")renderStats();if(id==="today")renderToday();const nb=q('nav button[data-view="'+id+'"]');if(nb)$("viewTitle").textContent=nb.textContent;if(id==="cycle")renderCycle();if(id==="dash")renderDash();document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id))}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
-const today=ymd(new Date());$("trackerDate").value=today;$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
-$("trackerDate").onchange=renderTracker;$("weekDate").onchange=renderWeekAuto;$("monthDate").onchange=renderMonthAuto;$("todayBtn").onclick=()=>{$("trackerDate").value=ymd(new Date());renderTracker()};
+const TABS={areas:{cur:"list",tabs:[["list","Aree","areasList"],["arch","Archiviate","arch"],["vac","Vacanza","vac"]]},trend:{cur:"radar",tabs:[["radar","Radar","radar"],["dash","Dashboard","dash"],["stats","Statistiche","stats"],["sum","Settimana","sum"]]}};
+const ALIAS={daily:["today"],radar:["trend","radar"],dash:["trend","dash"],stats:["trend","stats"],sum:["trend","sum"],arch:["areas","arch"],vac:["areas","vac"],backup:["settings"]};
+const VT={today:"Oggi",overview:"Panoramica",areas:"Aree e abitudini",trend:"Andamento",cycle:"12 Settimane",lib:"Libreria",reviews:"Revisioni",settings:"Impostazioni"};
+function renderTabs(id){const T=TABS[id],bar=document.querySelector('.ptabs[data-tabs="'+id+'"]');bar.innerHTML=T.tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===T.cur?"on":""}">${t[1]}</button>`).join("");T.tabs.forEach(t=>$(t[2]).classList.toggle("hidden",t[0]!==T.cur))}
+function show(id,sub){closeNav();const al=ALIAS[id];if(al){id=al[0];sub=al[1]}
+ if(TABS[id]){if(sub)TABS[id].cur=sub;renderTabs(id);const c=TABS[id].cur;if(c==="arch")renderArch();else if(c==="vac")renderVac();else if(c==="dash")renderDash();else if(c==="stats")renderStats();else if(c==="sum")renderSum();else if(c==="radar")renderRadar();else if(c==="list")renderAreaPicker()}
+ if(id==="settings"){renderSync();renderBk();renderSet()}if(id==="lib")renderLib();if(id==="today")renderToday();if(id==="cycle")renderCycle();if(id==="overview")renderOverview();
+ $("viewTitle").textContent=VT[id]||"";
+ document.querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));
+ document.querySelectorAll("nav button[data-view],#bnav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));window.scrollTo&&window.scrollTo(0,0)}
+document.addEventListener("click",e=>{const b=e.target.closest(".ptabs [data-tab]");if(!b)return;const id=b.closest(".ptabs").dataset.tabs;TABS[id].cur=b.dataset.tab;show(id)});
+/* ===== Tema ===== */
+const themeSel=()=>{try{return localStorage.getItem("lifeOS_theme")||"dark"}catch(e){return"dark"}};
+function applyTheme(){let t=themeSel();if(t==="auto")t=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";document.documentElement.setAttribute("data-theme",t);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#000000":"#f4f5f1"}
+function renderSet(){const e=$("themeSel");if(e)e.value=themeSel()}
+document.addEventListener("change",e=>{if(e.target.id==="themeSel"){try{localStorage.setItem("lifeOS_theme",e.target.value)}catch(x){}applyTheme()}});
+document.querySelectorAll("nav button[data-view],#bnav button").forEach(b=>b.onclick=()=>show(b.dataset.view));
+const today=ymd(new Date());$("weekDate").value=today;$("monthDate").value=today.slice(0,7);
+$("weekDate").onchange=renderWeekAuto;$("monthDate").onchange=renderMonthAuto;
+const setDate=v=>{const t=ymd(new Date());if(!v||v>t)v=t;$("trackerDate").max=t;$("trackerDate").value=v;renderToday()};
+$("dPrev").onclick=()=>setDate(ymd(addDays(parseYmd(ds()),-1)));$("dNext").onclick=()=>setDate(ymd(addDays(parseYmd(ds()),1)));$("trackerDate").onchange=()=>setDate($("trackerDate").value);$("todayBtn").onclick=()=>setDate(ymd(new Date()));$("trackerDate").value=today;$("trackerDate").max=today;
 $("saveWeek").onclick=()=>{const d=$("weekDate").value;if(!d)return;data.reviews.weeks[d]={wins:$("wins").value,obstacles:$("obstacles").value,next:$("next").value,auto:weekAuto()};save();renderHistory();$("weekSaved").textContent=" · Salvato"};
 $("saveMonth").onclick=()=>{const d=$("monthDate").value;if(!d)return;data.snapshots[d]=scoresNow();data.snapNotes[d]=Object.fromEntries(data.areas.filter(a=>a.note).map(a=>[a.id,a.note]));data.reviews.months[d]={best:$("monthBest").value,neglected:$("monthNeglected").value,action:$("monthAction").value,auto:monthAuto()};save();renderHistory();$("monthSaved").textContent=" · Salvato"};
 $("export").onclick=()=>{data.appVersion=APP_VERSION;const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="life-os-backup-v"+APP_VERSION+"-"+today+".json";a.click();URL.revokeObjectURL(a.href);data.ui.lastBackup=Date.now();save();renderBk();$("backupStatus").textContent="Backup esportato."};
@@ -781,6 +814,6 @@ $("shGoal").oninput=()=>{const g=parseFloat(String($("shGoal").value).replace(",
 $("shText").onkeydown=e=>{if(e.key==="Enter"&&addHabit())closeSheet()};
 $("topAdd").onclick=()=>openSheet({areaId:$("areas").classList.contains("hidden")||selected<0?undefined:data.areas[selected].id});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeNav();closeSheet()}});
-renderReleases();renderAll();renderDetail();renderSync();renderBk();syncSoon(800);askPersist();
+applyTheme();renderReleases();renderAll();renderDetail();renderSync();renderBk();syncSoon(800);askPersist();
 </script>
 </body></html>
