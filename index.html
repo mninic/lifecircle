@@ -220,8 +220,9 @@ const defaults = [
 ];
 /* Frequenze delle abitudini predefinite delle prime versioni: servono solo a importare backup molto vecchi */
 const LEGACY_FREQ=[["w3","w2","d","w1","d","d","w1","m"],["d","d","w","d","w","w","w","w"],["w","w","d","w","m","w","d"],["w","m","m","m","w","w"],["w","w","w","w","w","d","w"],["m","w","w","w","w","w","m"],["d","w","w","w","w","w"],["d","w","w","w","w","w","w"],["w","m","m","m","m","w","w","m"],["w","d","d","w","w","d","d","w"]];
-const APP_VERSION="1.16.0";
+const APP_VERSION="1.16.1";
 const RELEASES=[
+{v:"1.16.1",date:"26 novembre 2026",title:"Correzione medie",items:["Le abitudini archiviate che non sono mai state eseguite non entrano più nelle medie di Statistiche, Settimana e Dashboard."]},
 {v:"1.16.0",date:"22 novembre 2026",title:"Storico degli indicatori di risultato",items:["Grafico a curva dei valori dell'indicatore, con linea dell'obiettivo.","Storico dei valori con data e possibilità di eliminare un inserimento sbagliato.","Aggiornamento di un valore con data scelta (non solo oggi)."]},
 {v:"1.15.0",date:"22 novembre 2026",title:"Timer, quantità con tocco, programmazione",items:["Abitudini con timer: conto alla rovescia con suono, vibrazione e notifica; alla fine l'abitudine si completa da sola.","Il timer si imposta alla creazione o in Modifica; in Impostazioni c'è la prova di suono e notifica.","Abitudini a quantità: tocca la riga o il valore per inserire il numero (scheda con + e −, «Obiettivo» e barra di avanzamento).","Programmazione: le abitudini con inizio futuro mostrano «Inizia il…» e in Oggi il conteggio delle programmate."]},
 {v:"1.14.0",date:"22 novembre 2026",title:"Nuova struttura e tema scuro",items:["Tema scuro (predefinito), chiaro o automatico, da Impostazioni.","Barra di navigazione in basso: Home, Andamento, Impostazioni.","Andamento: Radar, Dashboard, Statistiche e Settimana in schede.","Oggi e Tracker uniti: frecce per cambiare giorno e tasto Oggi.","Vacanza e Archiviate dentro Aree e abitudini.","Nuova sezione Impostazioni (tema, backup, sincronizzazione, dati).","Emoji non necessarie rimosse (restano icone delle aree e 💡)."]},
@@ -344,7 +345,8 @@ const store=(f,k)=>bucket(f)[k]=bucket(f)[k]||{};
 const count=(f,k,id)=>+((bucket(f)[k]||{})[id])||0;
 const pEnd=(f,s)=>{if(f==="daily")return s;const d=parseYmd(s);return f==="weekly"?ymd(new Date(d.getFullYear(),d.getMonth(),d.getDate()+6-((d.getDay()+6)%7))):ymd(new Date(d.getFullYear(),d.getMonth()+1,0))};
 const items=s=>{s=s||ymd(new Date());return data.areas.flatMap(a=>a.micros.filter(m=>m.habit.trim()&&(m.archived||m.enabled)&&(m.spans||[]).some(p=>p.from<=pEnd(m.freq,s)&&(!p.to||s<p.to))).map(m=>({m,a})))};
-const statItems=()=>data.areas.flatMap(a=>a.micros.filter(m=>m.habit.trim()&&(m.archived||m.enabled)).map(m=>({m,a})));
+const doneIds=()=>{const S=new Set(),add=o=>Object.keys(o||{}).forEach(id=>{if(+o[id]>0)S.add(id)});Object.values(data.logs).forEach(add);Object.values(data.plogs.weeks).forEach(add);Object.values(data.plogs.months).forEach(add);return S};
+const statItems=()=>{const D=doneIds();return data.areas.flatMap(a=>a.micros.filter(m=>m.habit.trim()&&(m.archived?D.has(m.id):m.enabled)).map(m=>({m,a})))};
 const cov=(m,a,b)=>(m.spans||[{from:"0000-01-01"}]).some(p=>p.from<=a&&(!p.to||b<p.to));
 const curFrom=m=>m.spans&&m.spans.length?m.spans[m.spans.length-1].from:ymd(new Date());
 const sinceTxt=m=>(curFrom(m)>ymd(new Date())?"Inizia il ":"Dal ")+parseYmd(curFrom(m)).toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"});
